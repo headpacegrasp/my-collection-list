@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Curated Tools & Links</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>My Curated Tools & Links</h1>
+        <input type="text" id="searchInput" placeholder="Search tools, links, and categories...">
+    </header>
+
+    <main>
+        <div id="category-cards">
+            <!-- Category cards will be injected here by JavaScript -->
+        </div>
+
+        <div id="item-list">
+            <!-- Filtered/searched items will be injected here by JavaScript -->
+        </div>
+
+        <section id="add-new-item">
+            <h2>Add New Item</h2>
+            <form id="addItemForm">
+                <label for="itemCategory">Category:</label>
+                <select id="itemCategory" required>
+                    <!-- Categories will be dynamically loaded here -->
+                </select>
+
+                <label for="itemName">Item Name:</label>
+                <input type="text" id="itemName" required>
+
+                <label for="itemDescription">Description:</label>
+                <textarea id="itemDescription"></textarea>
+
+                <label for="itemUrl">URL:</label>
+                <input type="url" id="itemUrl" required>
+
+                <button type="submit">Generate New Item Data</button>
+            </form>
+            <div id="generatedItemData" style="display:none;">
+                <h3>Copy & Paste to Update `data.json`:</h3>
+                <textarea id="outputJson" readonly rows="10"></textarea>
+                <button onclick="copyToClipboard()">Copy to Clipboard</button>
+                <p>
+                    **Important:** For your changes to be permanent and visible to others, you'll need to manually copy this JSON snippet, add it to your `data.json` file in your GitHub repository, and then commit and push the changes.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
