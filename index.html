@@ -3,388 +3,950 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Tools & Links Search</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Resource Library</title>
     <style>
-        .tool-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .active-cat { background-color: #4f46e5 !important; color: white !important; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+		.stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+		
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+		
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+		
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }		
+		
+        .category-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .category-chip {
+            padding: 8px 16px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-chip:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .category-chip.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .resource-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .resource-category {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #edf2f7;
+            color: #4a5568;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .resource-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .resource-description {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .resource-link {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f7fafc;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #667eea;
+            font-size: 13px;
+            transition: all 0.2s;
+            word-break: break-all;
+        }
+
+        .resource-link:hover {
+            background: #edf2f7;
+            color: #5568d3;
+        }
+
+        .resource-link::before {
+            content: "🔗";
+            margin-right: 8px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #a0aec0;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #4a5568;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .links-container {
+            margin-bottom: 15px;
+        }
+
+        .link-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .link-input-group input {
+            flex: 1;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: white;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 25px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
     </style>
-</head>
-<body class="bg-gray-50 text-gray-900 min-h-screen">
-    <header class="bg-indigo-600 text-white shadow-md">
-        <div class="container mx-auto px-4 py-8 text-center">
-            <h1 class="text-4xl font-extrabold mb-2">My IT Toolkit</h1>
-            <p class="text-indigo-100">Quickly find and manage your collected resources</p>
-        </div>
-    </header>
-    
-    <main class="container mx-auto px-4 py-8">
-        <div class="max-w-4xl mx-auto flex flex-col md:flex-row gap-4 mb-8">
-            <input type="text" id="searchInput" placeholder="Search tools, links, or categories..." class="flex-1 p-4 rounded-xl border-none shadow-sm focus:ring-4 focus:ring-indigo-200 outline-none text-lg">
-            <button onclick="document.getElementById('addFormContainer').classList.toggle('hidden')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-xl transition shadow-sm"> + Add New Tool </button>
-        </div>
-        
-        <div id="addFormContainer" class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-lg border-2 border-green-100 mb-10 hidden">
-            <h2 class="text-xl font-bold mb-4 text-gray-800">Direct Entry to List</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input type="text" id="newName" placeholder="Tool Name" class="p-3 bg-gray-50 border rounded-lg outline-indigo-500">
-                <select id="newCategory" class="p-3 bg-gray-50 border rounded-lg outline-indigo-500">
-                    <option value="" disabled selected>Select Category</option>
-                    <option value="AI and Machine Learning">AI and Machine Learning</option>
-                    <option value="Analytics and Reporting">Analytics and Reporting</option>
-                    <option value="Cybersecurity and Hacking">Cybersecurity and Hacking</option>
-                    <option value="Database Management">Database Management</option>
-                    <option value="Development and DevOps">Development and DevOps</option>
-                    <option value="File and Data Management">File and Data Management</option>
-                    <option value="Hardware and Manufacturing">Hardware and Manufacturing</option>
-                    <option value="Linux Resources">Linux Resources</option>
-                    <option value="Media and Design">Media and Design</option>
-                    <option value="Media Conversion and Archiving">Media Conversion and Archiving</option>
-                    <option value="Miscellaneous">Miscellaneous</option>
-                    <option value="Networking and Cloud">Networking and Cloud</option>
-                    <option value="Operating Systems">Operating Systems</option>
-                    <option value="Privacy and Security">Privacy and Security</option>
-                    <option value="Productivity and Collaboration">Productivity and Collaboration</option>
-                    <option value="Remote Access and Management">Remote Access and Management</option>
-                    <option value="Software Installation and Management">Software Installation and Management</option>
-                    <option value="Virtualization and Emulation">Virtualization and Emulation</option>
-                    <option value="Website Development">Website Development</option>
-                    <option value="Windows Management">Windows Management</option>
-                </select>
-                <input type="text" id="newLink" placeholder="URL[](https://...)" class="p-3 bg-gray-50 border rounded-lg outline-indigo-500">
+
+
+    <div class="container">
+        <header>
+            <h1>📚 Resource Library</h1>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search resources by title, description, or category...">
+                <span class="search-icon">🔍</span>
             </div>
-            <button onclick="addNewTool()" class="mt-4 w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition"> Add to Live View </button>
+
+            <div class="controls">
+                <button class="btn btn-primary" onclick="openAddModal()">+ Add New Resource</button>
+                <button class="btn btn-secondary" onclick="exportData()">⬇ Export Data</button>
+                <button class="btn btn-secondary" onclick="document.getElementById(&#39;importFile&#39;).click()">⬆ Import Data</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+            </div>
+
+            <div class="category-filters" id="categoryFilters"></div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalResources">0</span>
+                    <span>Total Resources</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="totalCategories">0</span>
+                    <span>Categories</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="resources-grid" id="resourcesGrid"></div>
+
+        <div class="empty-state" id="emptyState">
+            <div class="empty-state-icon">🔍</div>
+            <div class="empty-state-title">No resources found</div>
+            <div class="empty-state-text">Try adjusting your search or filters</div>
         </div>
-        
-        <div id="filterBar" class="flex flex-wrap gap-2 justify-center mb-10">
-            <button onclick="filterBy('All', this)" class="filter-btn px-5 py-2 rounded-full border bg-white font-semibold transition active-cat">All</button>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Resource</h2>
+                <button class="close-btn" onclick="closeAddModal()">×</button>
+            </div>
+            
+            <form id="resourceForm" onsubmit="saveResource(event)">
+                <div class="form-group">
+                    <label for="category">Category *</label>
+                    <select id="category" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="title">Title *</label>
+                    <input type="text" id="title" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description *</label>
+                    <textarea id="description" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Links</label>
+                    <div class="links-container" id="linksContainer">
+                        <div class="link-input-group">
+                            <input type="url" placeholder="https://example.com" class="link-input">
+                            <button type="button" class="btn btn-danger btn-small" onclick="removeLink(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-small" onclick="addLinkField()">+ Add Another Link</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save Resource</button>
+                    <button type="button" class="btn" style="background: #e2e8f0; color: #4a5568; flex: 1;" onclick="closeAddModal()">Cancel</button>
+                </div>
+            </form>
         </div>
-        
-        <div id="toolGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <!-- Tools will be dynamically inserted here -->
-        </div>
-    </main>
+    </div>
 
     <script>
-        let toolsData = [
-            // Database Management
-            { name: "Prisma Blog - Database Types Comparison", category: "Database Management", link: "https://www.prisma.io/blog/comparison-of-database-models-1iz9u29nwn37" },
-            { name: "DataView", category: "Database Management", link: "https://dv.dbb1.dev" },
-            { name: "SheetJS", category: "Database Management", link: "https://github.com/SheetJS/js-xlsx" },
-            { name: "JExcel", category: "Database Management", link: "https://bossanova.uk/jexcel/v3/" },
-            { name: "TablesGenerator", category: "Database Management", link: "https://www.tablesgenerator.com/" },
-            { name: "DrawDB - Database Design Diagramming", category: "Database Management", link: "https://www.drawdb.app/" },
-            { name: "RankRed - Test Data Generation Tools", category: "Database Management", link: "https://www.rankred.com/test-data-generation-tools/" },
-            { name: "Mockaroo - Mock Data & APIs", category: "Database Management", link: "https://mockaroo.com/mock_apis" },
-            { name: "SQLEdit - Data Migration Tool", category: "Database Management", link: "http://www.sqledit.com/mk/index.html" },
-            { name: "SQLime - SQL Sandbox", category: "Database Management", link: "https://sqlime.org/" },
+        let resources = [];
+        let activeFilter = 'all';
 
-            // Operating Systems
-            { name: "PureOS", category: "Operating Systems", link: "https://pureos.net/" },
-            { name: "GrapheneOS", category: "Operating Systems", link: "https://grapheneos.org/" },
-            { name: "Qubes OS", category: "Operating Systems", link: "https://www.qubes-os.org/intro/" },
-            { name: "ReactOS", category: "Operating Systems", link: "https://www.reactos.org/" },
-            { name: "BlissOS", category: "Operating Systems", link: "https://www.blissos.org/" },
-            { name: "LinuxServer - Docker Images", category: "Operating Systems", link: "https://fleet.linuxserver.io/" },
-
-            // Linux Resources
-            { name: "RedHat Cheat Sheet", category: "Linux Resources", link: "https://developers.redhat.com/promotions/linux-cheatsheet/" },
-            { name: "SSH Commands Cheat Sheet", category: "Linux Resources", link: "https://www.redhat.com/sysadmin/ssh-file-copy-magic" },
-            { name: "Linux Shell Tips", category: "Linux Resources", link: "https://www.linuxshelltips.com/ssh-commands-cheat-sheet/" },
-            { name: "OSTechnix - Record Terminal", category: "Linux Resources", link: "https://www.ostechnix.com/record-everything-terminal/" },
-            { name: "Commandlinefu", category: "Linux Resources", link: "https://www.commandlinefu.com/commands/browse/sort-by-votes" },
-            { name: "Linux Hardening Guide", category: "Linux Resources", link: "https://madaidans-insecurities.github.io/guides/linux-hardening.html#firewalls" },
-            { name: "TurnKey Linux", category: "Linux Resources", link: "https://www.turnkeylinux.org/all" },
-
-            // Windows Management
-            { name: "SysInfoTools - Move Program Files", category: "Windows Management", link: "https://www.sysinfotools.com/blog/steps-to-move-program-files-to-another-drive-in-windows/" },
-            { name: "Microsoft Privacy Settings", category: "Windows Management", link: "https://account.microsoft.com/privacy/" },
-            { name: "ChrisTitusTech Winutil", category: "Windows Management", link: "https://github.com/ChrisTitusTech/winutil" },
-            { name: "Win11Debloat", category: "Windows Management", link: "https://github.com/Raphire/Win11Debloat" },
-            { name: "CTT Store", category: "Windows Management", link: "https://cttstore.com/?utm_source=youtube&utm_medium=product_shelf" },
-            { name: "UUPDump - Windows ISOs", category: "Windows Management", link: "https://uupdump.net/" },
-            { name: "Windows 10 Exorcist - Block Tracking", category: "Windows Management", link: "https://github.com/MegaphatNetworks/Windows-10-Exorcist-v1" },
-            { name: "PowerShell Bloatware Removal Scripts (YouTube)", category: "Windows Management", link: "https://www.youtube.com/results?search_query=remove+windows+bloatware+powershell+script" },
-
-            // Privacy and Security
-            { name: "Privacy Guides / RestorePrivacy / PrivacyTools", category: "Privacy and Security", link: "https://www.privacyguides.org/" },
-            { name: "Fingbox Firewall (YouTube)", category: "Privacy and Security", link: "https://www.youtube.com/results?search_query=fingbox" },
-            { name: "10MinuteMail - Temp Email (YouTube)", category: "Privacy and Security", link: "https://10minutemail.com/" },
-            { name: "Show WiFi Password Trick (YouTube)", category: "Privacy and Security", link: "https://www.youtube.com/results?search_query=show+wifi+password+windows" },
-            { name: "BrowserLeaks", category: "Privacy and Security", link: "https://browserleaks.com/" },
-            { name: "Have I Been Pwned / LeakCheck / DeHashed", category: "Privacy and Security", link: "https://haveibeenpwned.com/" },
-            { name: "AnonAddy / SimpleLogin - Anonymous Email", category: "Privacy and Security", link: "https://anonaddy.com/" },
-            { name: "AdNauseam - Adblocker", category: "Privacy and Security", link: "https://adnauseam.io/" },
-            { name: "Wormhole - Secure File Transfer", category: "Privacy and Security", link: "https://wormhole.app/" },
-            { name: "Cryptomator - File Encryption", category: "Privacy and Security", link: "https://cryptomator.org/" },
-            { name: "VirusTotal", category: "Privacy and Security", link: "https://www.virustotal.com/" },
-            { name: "Raspberry Pi Hardening Guides", category: "Privacy and Security", link: "https://pimylifeup.com/raspberry-pi-security/" },
-            { name: "ZeroTier - Decentralized VPN", category: "Privacy and Security", link: "https://www.zerotier.com/" },
-
-            // Networking and Cloud
-            { name: "Linode Cloud Servers", category: "Networking and Cloud", link: "https://www.linode.com/" },
-            { name: "Oracle Cloud Free Tier", category: "Networking and Cloud", link: "https://www.oracle.com/cloud/free/" },
-            { name: "InfinityFree / FreeHosting", category: "Networking and Cloud", link: "https://infinityfree.net/" },
-            { name: "Cloudflare DNS (Malware Block)", category: "Networking and Cloud", link: "https://1.1.1.2/" },
-            { name: "Freenom / DuckDNS - Free DNS", category: "Networking and Cloud", link: "https://www.freenom.com/" },
-            { name: "Cloudcraft - AWS Design", category: "Networking and Cloud", link: "https://cloudcraft.co/" },
-            { name: "LocalStack - Local Cloud Emulator", category: "Networking and Cloud", link: "https://localstack.cloud/" },
-            { name: "Storj - Decentralized Storage", category: "Networking and Cloud", link: "https://storj.io/" },
-            { name: "Meshtastic - Mesh Network (YouTube)", category: "Networking and Cloud", link: "https://meshtastic.org/" },
-            { name: "EasyDNS - Anti-Cancel DNS", category: "Networking and Cloud", link: "https://easydns.com/" },
-            { name: "Epik - Free Speech Hosting", category: "Networking and Cloud", link: "https://www.epik.com/" },
-            { name: "VanwaTech - DDoS Protection", category: "Networking and Cloud", link: "https://vanwatech.com/" },
-            { name: "CountryIPBlocks - IP Ranges", category: "Networking and Cloud", link: "https://www.countryipblocks.net/" },
-
-            // Development and DevOps
-            { name: "Developer Roadmap (GitHub)", category: "Development and DevOps", link: "https://github.com/kamranahmedse/developer-roadmap" },
-            { name: "DevOps Roadmap (GitHub)", category: "Development and DevOps", link: "https://github.com/milanm/DevOps-Roadmap" },
-            { name: "Ansible Resources / Crash Course", category: "Development and DevOps", link: "https://www.ansible.com/resources" },
-            { name: "Kubernetes Academy", category: "Development and DevOps", link: "https://kubernetes.io/training/" },
-            { name: "Container Platform eBook (LeanPub)", category: "Development and DevOps", link: "https://leanpub.com/" },
-            { name: "Pipedream - API Automation", category: "Development and DevOps", link: "https://pipedream.com/" },
-            { name: "GitHub Marketplace", category: "Development and DevOps", link: "https://github.com/marketplace" },
-            { name: "No-Code Tools: Retool, AppSumo, Softr, GlideApps, etc.", category: "Development and DevOps", link: "https://retool.com/" },
-            { name: "Wireframing: Whimsical / Wireflow", category: "Development and DevOps", link: "https://whimsical.com/" },
-            { name: "PseudoEditor - Online Code Editor", category: "Development and DevOps", link: "https://pseudoeditor.com/" },
-            { name: "CodeSandbox - Coding Sandbox", category: "Development and DevOps", link: "https://codesandbox.io/" },
-            { name: "CTO Guide (GitHub)", category: "Development and DevOps", link: "https://github.com/ZachGoldberg/Startup-CTO-Handbook" },
-
-            // Website Development
-            { name: "Website Builders: Site123, Silex, Webador, NicePage, Odoo, etc.", category: "Website Development", link: "https://site123.com/" },
-            { name: "Pagey - Free Website Hosting", category: "Website Development", link: "https://pagey.site/" },
-            { name: "Free WordPress Themes (Various)", category: "Website Development", link: "https://wordpress.org/themes/" },
-            { name: "WPThemeDetector", category: "Website Development", link: "https://www.wpthemedetector.com/" },
-            { name: "Migrate WordPress (YouTube)", category: "Website Development", link: "https://www.youtube.com/results?search_query=migrate+wordpress+website" },
-            { name: "Relume - AI Website Layout Generator", category: "Website Development", link: "https://www.relume.io/" },
-            { name: "GTMetrix - Website Speed Testing", category: "Website Development", link: "https://gtmetrix.com/" },
-            { name: "Website Checker: BuiltWith / Netcraft / WebCheck", category: "Website Development", link: "https://builtwith.com/" },
-            { name: "RankMath - SEO", category: "Website Development", link: "https://rankmath.com/" },
-            { name: "Termly / Termageddon - Policy Generators", category: "Website Development", link: "https://termly.io/" },
-            { name: "SingleFile - Save Webpage as HTML", category: "Website Development", link: "https://github.com/gildas-lormeau/SingleFile" },
-            { name: "Free/Low-Cost Hosting: InfinityFree, Ionos, Hostinger", category: "Website Development", link: "https://infinityfree.net/" },
-            { name: "1-Click Deployment: DigitalOcean / Bitnami", category: "Website Development", link: "https://marketplace.digitalocean.com/" },
-            { name: "Convert Website to App: GoNative, AppsGeyser, etc.", category: "Website Development", link: "https://gonative.io/" },
-            { name: "FindDomain - AI Domain Names", category: "Website Development", link: "https://finddomain.ai/" },
-
-            // Cybersecurity and Hacking
-            { name: "Dont-Hack.me - Ethical Hacking Resources", category: "Cybersecurity and Hacking", link: "https://dont-hack.me/" },
-            { name: "Offensive Security Labs", category: "Cybersecurity and Hacking", link: "https://www.offensive-security.com/labs/" },
-            { name: "CobaltStrike - Offensive Tool", category: "Cybersecurity and Hacking", link: "https://www.cobaltstrike.com/" },
-            { name: "Andrax - Android Hacking", category: "Cybersecurity and Hacking", link: "https://andrax.thecrackertechnology.com/" },
-            { name: "NMMappers - SSL Trust Checker", category: "Cybersecurity and Hacking", link: "https://nmmappers.com/" },
-            { name: "LetsEncrypt - Free CA", category: "Cybersecurity and Hacking", link: "https://letsencrypt.org/" },
-            { name: "DeliciousBrains - Local SSL Certificate", category: "Cybersecurity and Hacking", link: "https://deliciousbrains.com/ssl-certificate-authority-for-local-https-development/" },
-            { name: "VM Hardening / STIGs (StackExchange)", category: "Cybersecurity and Hacking", link: "https://security.stackexchange.com/" },
-            { name: "OSINT Data Report (Medium)", category: "Cybersecurity and Hacking", link: "https://medium.com/" },
-            { name: "Firewall Testing (LinkedIn)", category: "Cybersecurity and Hacking", link: "https://www.linkedin.com/" },
-            { name: "Kali Purple - SOC in a Box", category: "Cybersecurity and Hacking", link: "https://www.kali.org/docs/purple/" },
-
-            // AI and Machine Learning (expanded with sub-items)
-            { name: "MachineLearningMastery - Bayes Theorem for ML", category: "AI and Machine Learning", link: "https://machinelearningmastery.com/" },
-            { name: "290 Machine Learning Projects (Medium)", category: "AI and Machine Learning", link: "https://medium.com/" },
-            { name: "There's an AI for That", category: "AI and Machine Learning", link: "https://theresanaiforthat.com/" },
-            { name: "AI Tools List (GitHub / AIUncensored)", category: "AI and Machine Learning", link: "https://github.com/topics/ai-tools" },
-            { name: "AI Chatbots: ChatterDocs, ChatPDF, CustomGPT, Perplexity, etc.", category: "AI and Machine Learning", link: "https://www.perplexity.ai/" },
-            { name: "AI Document Tools: TypeAI, EditAway, PDFParser, etc.", category: "AI and Machine Learning", link: "https://www.chatpdf.com/" },
-            { name: "AI Image/Media: GetImg, ProPhotos, AI-Flux, SunoAI, etc.", category: "AI and Machine Learning", link: "https://getimg.ai/" },
-            { name: "AI Writing: StealthWriter, Speechelo, BookWriters, etc.", category: "AI and Machine Learning", link: "https://stealthwriter.ai/" },
-            { name: "AI Training/Testing: GuidesAI, MockInterviews, TestSigma", category: "AI and Machine Learning", link: "https://testsigma.com/" },
-            { name: "Self-Hosted AI: H2OAI, GPT4All, SecureAI-Tools", category: "AI and Machine Learning", link: "https://gpt4all.io/" },
-            { name: "Gretel - Synthetic Data Generator", category: "AI and Machine Learning", link: "https://gretel.ai/" },
-            { name: "FlowGPT - AI Prompt Library", category: "AI and Machine Learning", link: "https://flowgpt.com/" },
-            { name: "VeniceAI - Uncensored AI", category: "AI and Machine Learning", link: "https://venice.ai/" },
-            { name: "EliteGPT / AIAnswerGenerator - All-in-One AI", category: "AI and Machine Learning", link: "https://elitegpt.ai/" },
-            { name: "AIHub - AI OCR Tool", category: "AI and Machine Learning", link: "https://aihub.com/" },
-            { name: "Imagica - AI App Builder", category: "AI and Machine Learning", link: "https://imagica.ai/" },
-            { name: "Bolt.new / StackBlitz / AskCyph - App/Website Builder", category: "AI and Machine Learning", link: "https://bolt.new/" },
-
-            // Remote Access and Management
-            { name: "Google Remote Desktop", category: "Remote Access and Management", link: "https://remotedesktop.google.com/" },
-            { name: "RemoteUtilities", category: "Remote Access and Management", link: "https://www.remoteutilities.com/" },
-            { name: "Android Remote: AirMore, Vysor, Mobizen, etc.", category: "Remote Access and Management", link: "https://airmore.com/" },
-            { name: "Symless - Multi-Computer Control", category: "Remote Access and Management", link: "https://symless.com/" },
-            { name: "CyberCafe.space - Remote Window Machine", category: "Remote Access and Management", link: "https://cybercafe.space/" },
-
-            // Software Installation and Management
-            { name: "Ninite - Bulk Install", category: "Software Installation and Management", link: "https://ninite.com/" },
-            { name: "Silent Install Tools (AprelTech / Softpedia)", category: "Software Installation and Management", link: "https://www.softpedia.com/" },
-            { name: "Seizent - One-Click Installer", category: "Software Installation and Management", link: "https://seizent.com/" },
-            { name: "FossHub - Software Downloads", category: "Software Installation and Management", link: "https://fosshub.com/" },
-
-            // File and Data Management
-            { name: "Dan’s Tools - Conversion (CSV to JSON etc.)", category: "File and Data Management", link: "https://danstools.com/" },
-            { name: "Convertio - File Conversion", category: "File and Data Management", link: "https://convertio.co/" },
-            { name: "PDF Tools: EasePDF, ILovePDF, HongKiat, etc.", category: "File and Data Management", link: "https://www.ilovepdf.com/" },
-            { name: "DocuSeal - DocuSign Alternative", category: "File and Data Management", link: "https://www.docuseal.co/" },
-            { name: "Issuu - PDF to Flipbook", category: "File and Data Management", link: "https://issuu.com/" },
-            { name: "DBAN - Disk Wipe", category: "File and Data Management", link: "https://dban.org/" },
-            { name: "Veeam - Free Backup Solutions", category: "File and Data Management", link: "https://www.veeam.com/" },
-            { name: "BleachBit - Wipe Disk Space", category: "File and Data Management", link: "https://www.bleachbit.org/" },
-            { name: "Tresorit - Secure Storage & Sharing", category: "File and Data Management", link: "https://tresorit.com/" },
-
-            // Media and Design
-            { name: "3D Scanning: Meshroom / MeshLab", category: "Media and Design", link: "https://alicevision.org/" },
-            { name: "Photogrammetry for 3D Printing (PrusaPrinters)", category: "Media and Design", link: "https://www.prusaprinters.org/" },
-            { name: "3D Design Software (YouTube)", category: "Media and Design", link: "https://www.youtube.com/results?search_query=3d+design+software" },
-            { name: "Image Editing: HotPot, AKVIS Retoucher, LamaCleaner, etc.", category: "Media and Design", link: "https://hotpot.ai/" },
-            { name: "Free Stock Images: IsoRepublic, Pixabay, Unsplash, etc.", category: "Media and Design", link: "https://isorepublic.com/" },
-            { name: "Icon Libraries: Iconify, MynaUI, Iconshelf", category: "Media and Design", link: "https://iconify.design/" },
-            { name: "Figma - Adobe Illustrator Alternative (YouTube)", category: "Media and Design", link: "https://www.figma.com/" },
-            { name: "Recraft - Vector Generator", category: "Media and Design", link: "https://www.recraft.ai/" },
-            { name: "PhotoEnlarger", category: "Media and Design", link: "https://photoenlarger.com/" },
-            { name: "Drawing Tools: Excalidraw, DGM", category: "Media and Design", link: "https://excalidraw.com/" },
-            { name: "ColorCore - Color Generator", category: "Media and Design", link: "https://colorcore.app/" },
-            { name: "WordClouds - Word Cloud Generator", category: "Media and Design", link: "https://www.wordclouds.com/" },
-            { name: "Toolbrew - Multi Tools", category: "Media and Design", link: "https://toolbrew.co/" },
-            { name: "OBS Project - Streaming/Recording", category: "Media and Design", link: "https://obsproject.com/" },
-
-            // Productivity and Collaboration
-            { name: "Kanban: Trello / Planka (Open-source)", category: "Productivity and Collaboration", link: "https://trello.com/" },
-            { name: "Notion - Free Productivity App", category: "Productivity and Collaboration", link: "https://www.notion.so/" },
-            { name: "Jitsi - Open-Source Video Conferencing", category: "Productivity and Collaboration", link: "https://jitsi.org/" },
-            { name: "JS.Wiki - Open-Source Wiki Tool", category: "Productivity and Collaboration", link: "https://js.wiki/" },
-            { name: "Private Collaboration: Riseup Wikis/Pad/Share", category: "Productivity and Collaboration", link: "https://riseup.net/" },
-            { name: "Asana - Free IT Project Management", category: "Productivity and Collaboration", link: "https://asana.com/" },
-            { name: "TidyCal - Schedule Booking", category: "Productivity and Collaboration", link: "https://tidycal.com/" },
-            { name: "Process.st - Process Templates", category: "Productivity and Collaboration", link: "https://www.process.st/" },
-            { name: "SmartSheet - Policy Templates", category: "Productivity and Collaboration", link: "https://www.smartsheet.com/" },
-            { name: "Metricool - Social Media Management", category: "Productivity and Collaboration", link: "https://metricool.com/" },
-            { name: "SNote - Privacy-Focused Notes", category: "Productivity and Collaboration", link: "https://snote.app/" },
-            { name: "Federated - Privacy Business Suite", category: "Productivity and Collaboration", link: "https://fediverse.party/" },
-            { name: "Bitrix24 - ERP Tool", category: "Productivity and Collaboration", link: "https://www.bitrix24.com/" },
-
-            // Hardware and Manufacturing
-            { name: "EccentricWorkshop - CNC Controller", category: "Hardware and Manufacturing", link: "https://www.eccentricworkshop.com/" },
-            { name: "JLCPCB - PCB Manufacturing", category: "Hardware and Manufacturing", link: "https://jlcpcb.com/" },
-            { name: "LowCostMiniPCs - Mini PCs", category: "Hardware and Manufacturing", link: "https://www.lowcostminipcs.com/" },
-            { name: "Pi-hole Adblock (LinusTechTips YouTube)", category: "Hardware and Manufacturing", link: "https://pi-hole.net/" },
-            { name: "NAS Options: TrueNAS, OpenMediaVault, CasaOS, ZimaOS", category: "Hardware and Manufacturing", link: "https://www.truenas.com/" },
-            { name: "FreeNAS with Plex Setup (YouTube)", category: "Hardware and Manufacturing", link: "https://www.youtube.com/results?search_query=freenas+plex+setup" },
-
-            // Virtualization and Emulation
-            { name: "OSBoxes - Virtual Images", category: "Virtualization and Emulation", link: "https://www.osboxes.org/" },
-            { name: "YouWave - Android Emulator", category: "Virtualization and Emulation", link: "https://www.youwave.com/" },
-            { name: "Browser.lol / KasmWeb - Browser-Based Desktop", category: "Virtualization and Emulation", link: "https://browser.lol/" },
-
-            // Media Conversion and Archiving
-            { name: "HandBrake - Video Format Conversion", category: "Media Conversion and Archiving", link: "https://handbrake.fr/" },
-            { name: "MakeMKV - DVD/CD Ripping", category: "Media Conversion and Archiving", link: "https://www.makemkv.com/" },
-            { name: "Metube - Video Downloader", category: "Media Conversion and Archiving", link: "https://github.com/alexta69/metube" },
-            { name: "UnlimitedWeb - YouTube Downloader", category: "Media Conversion and Archiving", link: "https://unlimitedweb.com/" },
-            { name: "Archive.org - CDs/TV/Software Archive", category: "Media Conversion and Archiving", link: "https://archive.org/" },
-            { name: "RecordingToText - Voice to Text", category: "Media Conversion and Archiving", link: "https://www.youtube.com/results?search_query=voice+recording+to+text" },
-
-            // Analytics and Reporting
-            { name: "Matomo - Google Analytics Alternative", category: "Analytics and Reporting", link: "https://matomo.org/" },
-            { name: "DataReportal - Digital Trends", category: "Analytics and Reporting", link: "https://datareportal.com/" },
-            { name: "OpenPaymentsData - Doctor Payment Database", category: "Analytics and Reporting", link: "https://openpaymentsdata.cms.gov/" },
-
-            // Miscellaneous
-            { name: "MultiBoot USB: Easy2Boot, Ventoy, YUMI", category: "Miscellaneous", link: "https://www.ventoy.net/" },
-            { name: "QR Code Generators", category: "Miscellaneous", link: "https://www.qr-code-generator.com/" },
-            { name: "URL Shorteners: Grabify, Shlink, Minifi", category: "Miscellaneous", link: "https://grabify.link/" },
-            { name: "Linktree - Link Sharing", category: "Miscellaneous", link: "https://linktr.ee/" },
-            { name: "Encyclosphere - Decentralized Knowledge", category: "Miscellaneous", link: "https://encyclosphere.org/" },
-            { name: "Everipedia - Wikipedia on Blockchain", category: "Miscellaneous", link: "https://everipedia.org/" },
-            { name: "Ghost - Independent Publishing", category: "Miscellaneous", link: "https://ghost.org/" },
-            { name: "Uniswap - Decentralized Trading", category: "Miscellaneous", link: "https://uniswap.org/" },
-            { name: "OpenLibrary - Digital Library", category: "Miscellaneous", link: "https://openlibrary.org/" },
-            { name: "ChristianCollegeGuide", category: "Miscellaneous", link: "https://www.christiancollegeguide.net/" },
-            { name: "Ahrefs - Google Search Tips", category: "Miscellaneous", link: "https://ahrefs.com/blog/google-advanced-search-operators/" },
-            { name: "OOH Directory - Blog Collection", category: "Miscellaneous", link: "https://oohdirectory.com/" },
-            { name: "BearBlog - Privacy Blog Platform", category: "Miscellaneous", link: "https://bearblog.dev/" },
-            { name: "TechSoup - Nonprofit Discounts", category: "Miscellaneous", link: "https://www.techsoup.org/" },
-            { name: "IT-Tools Collection", category: "Miscellaneous", link: "https://it-tools.tech/" },
-            { name: "HostedSoftware - Hosted Open-Source", category: "Miscellaneous", link: "https://hostedsoftware.com/" },
-            { name: "Ethical.net - Ethical Alternatives", category: "Miscellaneous", link: "https://ethical.net/" },
-            { name: "AlternativeTo - Alternatives List", category: "Miscellaneous", link: "https://alternativeto.net/" },
-            { name: "FreeToolSuite", category: "Miscellaneous", link: "https://freetoolsuite.com/" },
-            { name: "PassportMaker - Passport Photo", category: "Miscellaneous", link: "https://passportmaker.com/" },
-            { name: "NoMoreCopyright - No-Copyright Images", category: "Miscellaneous", link: "https://nomorecopyright.com/" },
-            { name: "Degooglisons / Framasoft - Google Alternatives", category: "Miscellaneous", link: "https://degooglisons-internet.org/" },
-            { name: "CodeScene - Brooke’s Law Visualization", category: "Miscellaneous", link: "https://codescene.com/" },
-            { name: "Awesome-Selfhosted / Selfh.st", category: "Miscellaneous", link: "https://awesome-selfhosted.net/" },
-            { name: "KeithCirkel - Homelab Guide", category: "Miscellaneous", link: "https://keithcirkel.co.uk/" },
-            { name: "Self-Hosted PDF Tool (YouTube)", category: "Miscellaneous", link: "https://www.youtube.com/results?search_query=self+hosted+pdf+tool" },
-            { name: "Integrately - Integration SaaS", category: "Miscellaneous", link: "https://integrately.com/" },
-            { name: "SnipeIT - IT Asset Management", category: "Miscellaneous", link: "https://snipeitapp.com/" },
-            { name: "ToS;DR - Terms of Service Reader", category: "Miscellaneous", link: "https://tosdr.org/" },
-            { name: "WebArchive - Website Archive", category: "Miscellaneous", link: "https://web.archive.org/" },
-            { name: "VP.net - Private VPN", category: "Miscellaneous", link: "https://vp.net/" },
-            { name: "Awesome-Selfhosted Ticketing", category: "Miscellaneous", link: "https://awesome-selfhosted.net/tags/ticketing.html" }
+        const categories = [
+            'Database Management', 'Operating Systems', 'Linux Resources', 'Windows Management',
+            'Privacy and Security', 'Networking and Cloud', 'Development and DevOps', 'Website Development',
+            'Cybersecurity and Hacking', 'AI and Machine Learning', 'Remote Access and Management',
+            'Software Installation and Management', 'File and Data Management', 'Media and Design',
+            'Productivity and Collaboration', 'Hardware and Manufacturing', 'Virtualization and Emulation',
+            'Media Conversion and Archiving', 'Analytics and Reporting', 'Miscellaneous',
+            'Business Management', 'Financial and Accounting', 'Legal and Compliance', 'HR and Recruitment',
+            'Marketing and Design', 'Real Estate and Investment', 'Career and Job Search',
+            'IT and Cybersecurity Training', 'Education and Online Learning', 'Health and Wellness',
+            'Personal Tools'
         ];
 
-        // Generate category filter buttons
-        const categories = [...new Set(toolsData.map(tool => tool.category))].sort();
-        const filterBar = document.getElementById('filterBar');
-        categories.forEach(cat => {
-            const btn = document.createElement('button');
-            btn.textContent = cat;
-            btn.className = 'filter-btn px-5 py-2 rounded-full border bg-white font-semibold transition';
-            btn.onclick = function() { filterBy(cat, this); };
-            filterBar.appendChild(btn);
-        });
+        const initialResources = [
+            // Database Management
+            {"category":"Database Management","title":"Database Types Comparison","description":"Overview of database models (relational, NoSQL, etc.).","links":["https://www.prisma.io/blog/comparison-of-database-models-1iz9u29nwn37"]},
+            {"category":"Database Management","title":"DataView","description":"Free tool to share tabular data easily.","links":["https://dv.dbb1.dev"]},
+            {"category":"Database Management","title":"SheetJS","description":"JavaScript library for Excel manipulation.","links":["https://github.com/SheetJS/js-xlsx"]},
+            {"category":"Database Management","title":"JExcel","description":"Spreadsheet editor for web.","links":["https://bossanova.uk/jexcel/v3/"]},
+            {"category":"Database Management","title":"TablesGenerator","description":"Online table generator.","links":["https://www.tablesgenerator.com/"]},
+            {"category":"Database Management","title":"DrawDB","description":"Database design diagramming tool.","links":["https://www.drawdb.app/"]},
+            {"category":"Database Management","title":"RankRed","description":"Test data generation tools.","links":["https://www.rankred.com/test-data-generation-tools/"]},
+            {"category":"Database Management","title":"Mockaroo","description":"Mock data generator.","links":["https://mockaroo.com/mock_apis"]},
+            {"category":"Database Management","title":"SQLEdit","description":"Data migration tool.","links":["http://www.sqledit.com/mk/index.html"]},
+            {"category":"Database Management","title":"SQLime","description":"SQL sandbox.","links":["https://sqlime.org/"]},
 
-        // Render tools
-        function renderTools(data) {
-            const grid = document.getElementById('toolGrid');
+            // Operating Systems
+            {"category":"Operating Systems","title":"PureOS","description":"Privacy-focused Linux OS.","links":["https://pureos.net/"]},
+            {"category":"Operating Systems","title":"GrapheneOS","description":"Secure Android OS.","links":["https://grapheneos.org/"]},
+            {"category":"Operating Systems","title":"Qubes OS","description":"Security-focused OS.","links":["https://www.qubes-os.org/intro/"]},
+            {"category":"Operating Systems","title":"ReactOS","description":"Open-source Windows alternative.","links":["https://www.reactos.org/"]},
+            {"category":"Operating Systems","title":"BlissOS","description":"Android OS for PCs.","links":["https://www.blissos.org/"]},
+            {"category":"Operating Systems","title":"LinuxServer","description":"Docker images.","links":["https://fleet.linuxserver.io/"]},
+
+            // Linux Resources
+            {"category":"Linux Resources","title":"RedHat Cheat Sheet","description":"Linux commands cheat sheet.","links":["https://developers.redhat.com/promotions/linux-cheatsheet/"]},
+            {"category":"Linux Resources","title":"SSH Commands","description":"SSH file copy commands.","links":["https://www.redhat.com/sysadmin/ssh-file-copy-magic"]},
+            {"category":"Linux Resources","title":"Linux Shell Tips","description":"SSH commands cheat sheet.","links":["https://www.linuxshelltips.com/ssh-commands-cheat-sheet/"]},
+            {"category":"Linux Resources","title":"OSTechnix","description":"Record terminal sessions.","links":["https://www.ostechnix.com/record-everything-terminal/"]},
+            {"category":"Linux Resources","title":"Commandlinefu","description":"Command-line tools collection.","links":["https://www.commandlinefu.com/commands/browse/sort-by-votes"]},
+            {"category":"Linux Resources","title":"Linux Hardening","description":"Linux security guide.","links":["https://madaidans-insecurities.github.io/guides/linux-hardening.html#firewalls"]},
+            {"category":"Linux Resources","title":"TurnKey Linux","description":"Pre-built Linux images.","links":["https://www.turnkeylinux.org/all"]},
+
+            // Windows Management
+            {"category":"Windows Management","title":"SysInfoTools","description":"Move program files guide.","links":["https://www.sysinfotools.com/blog/steps-to-move-program-files-to-another-drive-in-windows/"]},
+            {"category":"Windows Management","title":"Microsoft Privacy","description":"Privacy settings.","links":["https://account.microsoft.com/privacy/"]},
+            {"category":"Windows Management","title":"ChrisTitusTech","description":"Winutil debloat tool.","links":["https://github.com/ChrisTitusTech/winutil"]},
+            {"category":"Windows Management","title":"Win11Debloat","description":"Windows 11 debloat.","links":["https://github.com/Raphire/Win11Debloat"]},
+            {"category":"Windows Management","title":"CTT Store","description":"Tech store.","links":["https://cttstore.com/?utm_source=youtube&utm_medium=product_shelf"]},
+            {"category":"Windows Management","title":"UUPDump","description":"Windows ISOs.","links":["https://uupdump.net/"]},
+
+            // Privacy and Security
+            {"category":"Privacy and Security","title":"PrivacyTools","description":"Privacy tools list.","links":["https://www.privacytools.io/"]},
+            {"category":"Privacy and Security","title":"Fingbox Firewall","description":"Network security device.","links":["https://www.youtube.com/results?search_query=fingbox"]},
+            {"category":"Privacy and Security","title":"10MinuteMail","description":"Temporary emails.","links":["https://10minutemail.com/"]},
+            {"category":"Privacy and Security","title":"BrowserLeaks","description":"Browser leak checker.","links":["https://browserleaks.com/"]},
+            {"category":"Privacy and Security","title":"HaveIBeenPwned","description":"Breach checker.","links":["https://haveibeenpwned.com/"]},
+            {"category":"Privacy and Security","title":"AnonAddy","description":"Anonymous email aliases.","links":["https://anonaddy.com/"]},
+            {"category":"Privacy and Security","title":"AdNauseam","description":"Ad blocker.","links":["https://adnauseam.io/"]},
+            {"category":"Privacy and Security","title":"Wormhole","description":"Secure file transfer.","links":["https://wormhole.app/"]},
+            {"category":"Privacy and Security","title":"Cryptomator","description":"File encryption.","links":["https://cryptomator.org/"]},
+            {"category":"Privacy and Security","title":"VirusTotal","description":"Malware scanner.","links":["https://www.virustotal.com/"]},
+            {"category":"Privacy and Security","title":"SecurePi","description":"Raspberry Pi hardening.","links":["https://github.com/securepi"]},
+            {"category":"Privacy and Security","title":"ZeroTier","description":"Decentralized VPN.","links":["https://www.zerotier.com/"]},
+
+            // Networking and Cloud
+            {"category":"Networking and Cloud","title":"Linode","description":"Cloud servers.","links":["https://www.linode.com/"]},
+            {"category":"Networking and Cloud","title":"Oracle Cloud","description":"Free cloud tier.","links":["https://www.oracle.com/cloud/free/"]},
+            {"category":"Networking and Cloud","title":"InfinityFree","description":"Free hosting.","links":["https://infinityfree.net/"]},
+            {"category":"Networking and Cloud","title":"Cloudflare DNS","description":"Secure DNS.","links":["https://1.1.1.2/"]},
+            {"category":"Networking and Cloud","title":"Freenom","description":"Free DNS.","links":["https://www.freenom.com/"]},
+            {"category":"Networking and Cloud","title":"Cloudcraft","description":"AWS design.","links":["https://cloudcraft.co/"]},
+            {"category":"Networking and Cloud","title":"LocalStack","description":"Local cloud emulator.","links":["https://localstack.cloud/"]},
+            {"category":"Networking and Cloud","title":"Storj","description":"Decentralized storage.","links":["https://storj.io/"]},
+            {"category":"Networking and Cloud","title":"Meshtastic","description":"Mesh network.","links":["https://meshtastic.org/"]},
+            {"category":"Networking and Cloud","title":"EasyDNS","description":"DNS service.","links":["https://easydns.com/"]},
+            {"category":"Networking and Cloud","title":"Epik","description":"Hosting.","links":["https://www.epik.com/"]},
+            {"category":"Networking and Cloud","title":"VanwaTech","description":"DDoS protection.","links":["https://vanwatech.com/"]},
+            {"category":"Networking and Cloud","title":"CountryIPBlocks","description":"IP ranges.","links":["https://www.countryipblocks.net/"]},
+
+            // Development and DevOps
+            {"category":"Development and DevOps","title":"Developer Roadmap","description":"Development paths guide.","links":["https://github.com/kamranahmedse/developer-roadmap"]},
+            {"category":"Development and DevOps","title":"DevOps Guide","description":"DevOps resources.","links":["https://github.com/milanm/DevOps-Roadmap"]},
+            {"category":"Development and DevOps","title":"Ansible Resources","description":"Automation tools.","links":["https://www.ansible.com/resources"]},
+            {"category":"Development and DevOps","title":"Kubernetes Academy","description":"Kubernetes learning.","links":["https://kubernetes.io/training/"]},
+            {"category":"Development and DevOps","title":"Pipedream","description":"API automation.","links":["https://pipedream.com/"]},
+            {"category":"Development and DevOps","title":"GitHub Marketplace","description":"Developer tools.","links":["https://github.com/marketplace"]},
+            {"category":"Development and DevOps","title":"Retool","description":"No-code tools.","links":["https://retool.com/"]},
+            {"category":"Development and DevOps","title":"Whimsical","description":"Wireframing.","links":["https://whimsical.com/"]},
+            {"category":"Development and DevOps","title":"PseudoEditor","description":"Online code editor.","links":["https://pseudoeditor.com/"]},
+            {"category":"Development and DevOps","title":"CodeSandbox","description":"Coding sandbox.","links":["https://codesandbox.io/"]},
+            {"category":"Development and DevOps","title":"CTO Guide","description":"Startup CTO handbook.","links":["https://github.com/ZachGoldberg/Startup-CTO-Handbook"]},
+
+            // Website Development
+            {"category":"Website Development","title":"Site123","description":"Website builders.","links":["https://site123.com/"]},
+            {"category":"Website Development","title":"Pagey","description":"Free hosting.","links":["https://pagey.site/"]},
+            {"category":"Website Development","title":"WPThemeDetector","description":"WordPress theme detector.","links":["https://www.wpthemedetector.com/"]},
+            {"category":"Website Development","title":"Relume","description":"AI layout generator.","links":["https://www.relume.io/"]},
+            {"category":"Website Development","title":"GTMetrix","description":"Speed testing.","links":["https://gtmetrix.com/"]},
+            {"category":"Website Development","title":"BuiltWith","description":"Website checker.","links":["https://builtwith.com/"]},
+            {"category":"Website Development","title":"RankMath","description":"SEO tool.","links":["https://rankmath.com/"]},
+            {"category":"Website Development","title":"Termly","description":"Policy generators.","links":["https://termly.io/"]},
+            {"category":"Website Development","title":"SingleFile","description":"Save webpage as HTML.","links":["https://github.com/gildas-lormeau/SingleFile"]},
+            {"category":"Website Development","title":"InfinityFree","description":"Hosting.","links":["https://infinityfree.net/"]},
+            {"category":"Website Development","title":"DigitalOcean Marketplace","description":"1-click deployment.","links":["https://marketplace.digitalocean.com/"]},
+            {"category":"Website Development","title":"GoNative","description":"Convert to app.","links":["https://gonative.io/"]},
+            {"category":"Website Development","title":"FindDomain","description":"AI domain finder.","links":["https://finddomain.ai/"]},
+
+            // Cybersecurity and Hacking
+            {"category":"Cybersecurity and Hacking","title":"Dont-Hack.me","description":"Ethical hacking resources.","links":["https://dont-hack.me/"]},
+            {"category":"Cybersecurity and Hacking","title":"Offensive Security Labs","description":"Practice cybersecurity.","links":["https://www.offensive-security.com/labs/"]},
+            {"category":"Cybersecurity and Hacking","title":"CobaltStrike","description":"Offensive tool.","links":["https://www.cobaltstrike.com/"]},
+            {"category":"Cybersecurity and Hacking","title":"Andrax","description":"Android hacking.","links":["https://andrax.thecrackertechnology.com/"]},
+            {"category":"Cybersecurity and Hacking","title":"NMMappers","description":"SSL checker.","links":["https://nmmappers.com/"]},
+            {"category":"Cybersecurity and Hacking","title":"LetsEncrypt","description":"Free SSL.","links":["https://letsencrypt.org/"]},
+            {"category":"Cybersecurity and Hacking","title":"DeliciousBrains","description":"Local SSL.","links":["https://deliciousbrains.com/ssl-certificate-authority-for-local-https-development/"]},
+            {"category":"Cybersecurity and Hacking","title":"Kali Purple","description":"SOC in a box.","links":["https://www.kali.org/docs/purple/"]},
+
+            // AI and Machine Learning
+            {"category":"AI and Machine Learning","title":"MachineLearningMastery","description":"Bayes theorem for ML.","links":["https://machinelearningmastery.com/"]},
+            {"category":"AI and Machine Learning","title":"ML Projects","description":"290 ML projects.","links":["https://medium.com/"]},
+            {"category":"AI and Machine Learning","title":"There's an AI for That","description":"AI tools directory.","links":["https://theresanaiforthat.com/"]},
+            {"category":"AI and Machine Learning","title":"Perplexity","description":"AI chatbots.","links":["https://www.perplexity.ai/"]},
+            {"category":"AI and Machine Learning","title":"GetImg","description":"AI image tools.","links":["https://getimg.ai/"]},
+            {"category":"AI and Machine Learning","title":"StealthWriter","description":"AI writing tools.","links":["https://stealthwriter.ai/"]},
+            {"category":"AI and Machine Learning","title":"GPT4All","description":"Self-hosted AI.","links":["https://gpt4all.io/"]},
+            {"category":"AI and Machine Learning","title":"Gretel","description":"Synthetic data generator.","links":["https://gretel.ai/"]},
+            {"category":"AI and Machine Learning","title":"FlowGPT","description":"Prompt library.","links":["https://flowgpt.com/"]},
+            {"category":"AI and Machine Learning","title":"VeniceAI","description":"Uncensored AI.","links":["https://venice.ai/"]},
+            {"category":"AI and Machine Learning","title":"Bolt.new","description":"App builder.","links":["https://bolt.new/"]},
+
+            // Remote Access and Management
+            {"category":"Remote Access and Management","title":"Google Remote Desktop","description":"Remote access.","links":["https://remotedesktop.google.com/"]},
+            {"category":"Remote Access and Management","title":"RemoteUtilities","description":"Remote access software.","links":["https://www.remoteutilities.com/"]},
+            {"category":"Remote Access and Management","title":"AirMore","description":"Android remote.","links":["https://airmore.com/"]},
+            {"category":"Remote Access and Management","title":"Symless","description":"Multi-PC control.","links":["https://symless.com/"]},
+            {"category":"Remote Access and Management","title":"CyberCafe.space","description":"Remote Windows.","links":["https://cybercafe.space/"]},
+
+            // Software Installation and Management
+            {"category":"Software Installation and Management","title":"Ninite","description":"Bulk installer.","links":["https://ninite.com/"]},
+            {"category":"Software Installation and Management","title":"Seizent","description":"One-click installer.","links":["https://seizent.com/"]},
+            {"category":"Software Installation and Management","title":"FossHub","description":"Software downloads.","links":["https://fosshub.com/"]},
+
+            // File and Data Management
+            {"category":"File and Data Management","title":"Dan’s Tools","description":"File conversion.","links":["https://danstools.com/"]},
+            {"category":"File and Data Management","title":"Convertio","description":"File converter.","links":["https://convertio.co/"]},
+            {"category":"File and Data Management","title":"ILovePDF","description":"PDF tools.","links":["https://www.ilovepdf.com/"]},
+            {"category":"File and Data Management","title":"DocuSeal","description":"DocuSign alternative.","links":["https://www.docuseal.co/"]},
+            {"category":"File and Data Management","title":"DBAN","description":"Disk wipe.","links":["https://dban.org/"]},
+            {"category":"File and Data Management","title":"Veeam","description":"Free backups.","links":["https://www.veeam.com/"]},
+            {"category":"File and Data Management","title":"BleachBit","description":"Disk space wipe.","links":["https://www.bleachbit.org/"]},
+            {"category":"File and Data Management","title":"Tresorit","description":"Secure sharing.","links":["https://tresorit.com/"]},
+
+            // Media and Design
+            {"category":"Media and Design","title":"Meshroom","description":"3D scanning.","links":["https://alicevision.org/"]},
+            {"category":"Media and Design","title":"HotPot","description":"Image editing.","links":["https://hotpot.ai/"]},
+            {"category":"Media and Design","title":"IsoRepublic","description":"Free stock images.","links":["https://isorepublic.com/"]},
+            {"category":"Media and Design","title":"Iconify","description":"Icon libraries.","links":["https://iconify.design/"]},
+            {"category":"Media and Design","title":"Figma","description":"Illustrator alternative.","links":["https://www.figma.com/"]},
+            {"category":"Media and Design","title":"Recraft","description":"Vector generator.","links":["https://www.recraft.ai/"]},
+            {"category":"Media and Design","title":"PhotoEnlarger","description":"Image enlarger.","links":["https://photoenlarger.com/"]},
+            {"category":"Media and Design","title":"Excalidraw","description":"Drawing tools.","links":["https://excalidraw.com/"]},
+            {"category":"Media and Design","title":"ColorCore","description":"Color generator.","links":["https://colorcore.app/"]},
+            {"category":"Media and Design","title":"WordClouds","description":"Word cloud generator.","links":["https://www.wordclouds.com/"]},
+            {"category":"Media and Design","title":"OBS Project","description":"Streaming and recording.","links":["https://obsproject.com/"]},
+
+            // Productivity and Collaboration
+            {"category":"Productivity and Collaboration","title":"Trello","description":"Kanban boards.","links":["https://trello.com/"]},
+            {"category":"Productivity and Collaboration","title":"Notion","description":"Productivity app.","links":["https://www.notion.so/"]},
+            {"category":"Productivity and Collaboration","title":"Jitsi","description":"Video conferencing.","links":["https://jitsi.org/"]},
+            {"category":"Productivity and Collaboration","title":"Asana","description":"Project management.","links":["https://asana.com/"]},
+            {"category":"Productivity and Collaboration","title":"TidyCal","description":"Scheduling.","links":["https://tidycal.com/"]},
+            {"category":"Productivity and Collaboration","title":"Metricool","description":"Social media management.","links":["https://metricool.com/"]},
+            {"category":"Productivity and Collaboration","title":"Bitrix24","description":"ERP tool.","links":["https://www.bitrix24.com/"]},
+
+            // Hardware and Manufacturing
+            {"category":"Hardware and Manufacturing","title":"EccentricWorkshop","description":"CNC controller.","links":["https://www.eccentricworkshop.com/"]},
+            {"category":"Hardware and Manufacturing","title":"JLCPCB","description":"PCB manufacturing.","links":["https://jlcpcb.com/"]},
+            {"category":"Hardware and Manufacturing","title":"LowCostMiniPCs","description":"Mini PCs.","links":["https://lowcostminipcs.com/"]},
+            {"category":"Hardware and Manufacturing","title":"TrueNAS","description":"NAS options.","links":["https://www.truenas.com/"]},
+
+            // Virtualization and Emulation
+            {"category":"Virtualization and Emulation","title":"OSBoxes","description":"VM images.","links":["https://www.osboxes.org/"]},
+            {"category":"Virtualization and Emulation","title":"YouWave","description":"Android emulator.","links":["https://www.youwave.com/"]},
+            {"category":"Virtualization and Emulation","title":"Browser.lol","description":"Browser-based desktop.","links":["https://browser.lol/"]},
+
+            // Media Conversion and Archiving
+            {"category":"Media Conversion and Archiving","title":"HandBrake","description":"Video conversion.","links":["https://handbrake.fr/"]},
+            {"category":"Media Conversion and Archiving","title":"MakeMKV","description":"DVD ripping.","links":["https://www.makemkv.com/"]},
+            {"category":"Media Conversion and Archiving","title":"Metube","description":"Video downloader.","links":["https://github.com/alexta69/metube"]},
+            {"category":"Media Conversion and Archiving","title":"Archive.org","description":"Media archive.","links":["https://archive.org/"]},
+
+            // Analytics and Reporting
+            {"category":"Analytics and Reporting","title":"Matomo","description":"Analytics alternative.","links":["https://matomo.org/"]},
+            {"category":"Analytics and Reporting","title":"DataReportal","description":"Digital trends.","links":["https://datareportal.com/"]},
+            {"category":"Analytics and Reporting","title":"OpenPaymentsData","description":"Doctor payments database.","links":["https://openpaymentsdata.cms.gov/"]},
+
+            // Miscellaneous
+            {"category":"Miscellaneous","title":"Ventoy","description":"MultiBoot USB.","links":["https://www.ventoy.net/"]},
+            {"category":"Miscellaneous","title":"QR-Code-Generator","description":"QR codes.","links":["https://www.qr-code-generator.com/"]},
+            {"category":"Miscellaneous","title":"Grabify","description":"URL shorteners.","links":["https://grabify.link/"]},
+            {"category":"Miscellaneous","title":"Linktree","description":"Link sharing.","links":["https://linktr.ee/"]},
+            {"category":"Miscellaneous","title":"Encyclosphere","description":"Decentralized knowledge.","links":["https://encyclosphere.org/"]},
+            {"category":"Miscellaneous","title":"OpenLibrary","description":"Digital library.","links":["https://openlibrary.org/"]},
+            {"category":"Miscellaneous","title":"Ahrefs","description":"Google search tips.","links":["https://ahrefs.com/blog/google-advanced-search-operators/"]},
+            {"category":"Miscellaneous","title":"BearBlog","description":"Privacy blog platform.","links":["https://bearblog.dev/"]},
+            {"category":"Miscellaneous","title":"TechSoup","description":"Nonprofit discounts.","links":["https://www.techsoup.org/"]},
+            {"category":"Miscellaneous","title":"IT-Tools","description":"IT tools collection.","links":["https://it-tools.tech/"]},
+            {"category":"Miscellaneous","title":"Awesome-Selfhosted","description":"Self-hosted tools.","links":["https://awesome-selfhosted.net/"]},
+            {"category":"Miscellaneous","title":"SnipeIT","description":"Asset management.","links":["https://snipeitapp.com/"]},
+            {"category":"Miscellaneous","title":"ToS;DR","description":"Terms reader.","links":["https://tosdr.org/"]},
+            {"category":"Miscellaneous","title":"WebArchive","description":"Website archive.","links":["https://web.archive.org/"]},
+
+            // Business Tech Items (added with appropriate categories)
+            {"category":"Business Management","title":"Beatable","description":"Business idea validation platform.","links":["https://beatable.co/"]},
+            {"category":"Website Development","title":"GTMetrix","description":"Website speed testing.","links":["https://gtmetrix.com/"]},
+            {"category":"Website Development","title":"WebCheck","description":"Website audit tool.","links":[]},
+            {"category":"Website Development","title":"SitePro","description":"Easy website builder.","links":["https://site.pro/"]},
+            {"category":"Website Development","title":"Odoo Website Builder","description":"Business app website builder.","links":["https://www.odoo.com/page/website-builder"]},
+            {"category":"Website Development","title":"Silex","description":"Website builder.","links":["https://www.silex.me/"]},
+            {"category":"Website Development","title":"Ionos","description":"Low-cost web hosting.","links":["https://www.ionos.com/"]},
+            {"category":"Website Development","title":"GoNative","description":"Convert website to app.","links":["https://gonative.io/"]},
+            {"category":"Website Development","title":"ToDesktop","description":"Convert website to app.","links":["https://www.todesktop.com/"]},
+            {"category":"Legal and Compliance","title":"Termly","description":"Consent and policy generator.","links":["https://termly.io/"]},
+            {"category":"Legal and Compliance","title":"Termageddon","description":"Automatic policy updates.","links":["https://termageddon.com/"]},
+            {"category":"File and Data Management","title":"Issuu","description":"PDF to flipbook converter.","links":["https://issuu.com/"]},
+            {"category":"Business Management","title":"Dubsado","description":"Client management.","links":["https://www.dubsado.com/"]},
+            {"category":"Business Management","title":"Odoo","description":"Comprehensive business apps.","links":["https://www.odoo.com/"]},
+            {"category":"Business Management","title":"Agiled","description":"Project and client management.","links":["https://agiled.app/"]},
+            {"category":"Business Management","title":"Zodot","description":"Business management suite.","links":["https://zodot.co/"]},
+            {"category":"Business Management","title":"Bitrix24","description":"ERP and collaboration tool.","links":["https://www.bitrix24.com/"]},
+            {"category":"HR and Recruitment","title":"Frappe","description":"Open-source ERP and HR.","links":["https://frappe.io/"]},
+            {"category":"Business Management","title":"Federated","description":"Privacy-focused business suite.","links":["https://www.federated.computer/"]},
+            {"category":"Business Management","title":"SmartSheet","description":"Project requirements templates.","links":["https://www.smartsheet.com/content/project-requirements-templates"]},
+            {"category":"Business Management","title":"CTO Guide","description":"Handbook for startup CTOs.","links":["https://github.com/ZachGoldberg/Startup-CTO-Handbook"]},
+            {"category":"Business Management","title":"BuildPad","description":"Idea builder.","links":["https://buildpad.io/"]},
+            {"category":"Business Management","title":"Docmost","description":"Jira and Confluence alternative.","links":["https://docmost.com/"]},
+            {"category":"Business Management","title":"Plane","description":"Project management alternative.","links":["https://plane.so/"]},
+            {"category":"Business Management","title":"Crevo","description":"Requirements development AI.","links":["https://crevo.aurakl.ai/pricing"]},
+            {"category":"Financial and Accounting","title":"Akaunting","description":"Free accounting software.","links":["https://akaunting.com/"]},
+            {"category":"Financial and Accounting","title":"TemplateLab","description":"Excel templates for finance.","links":["https://templatelab.com/investment-tracking-spreadsheets/"]},
+            {"category":"Financial and Accounting","title":"Novo","description":"Business checking account.","links":["https://www.novo.co/"]},
+            {"category":"Financial and Accounting","title":"DoctorOfCredit","description":"High-interest savings and CDs.","links":["https://www.doctorofcredit.com/high-interest-savings-to-get/"]},
+            {"category":"Financial and Accounting","title":"CIT Bank","description":"Banking and loans.","links":["https://www.cit.com/"]},
+            {"category":"Financial and Accounting","title":"SharedEconomyCPA","description":"Taxes for Airbnb.","links":["https://sharedeconomycpa.com/cpa-tax-services/"]},
+            {"category":"Financial and Accounting","title":"Old Glory Bank","description":"Banking.","links":["https://oldglorybank.com/"]},
+            {"category":"Legal and Compliance","title":"USLegalForms","description":"Legal document generators.","links":["https://www.uslegalforms.com/"]},
+            {"category":"Legal and Compliance","title":"eForms","description":"Legal forms.","links":["https://eforms.com/"]},
+            {"category":"Legal and Compliance","title":"FormSwift","description":"Legal documents.","links":["https://formswift.com/"]},
+            {"category":"Legal and Compliance","title":"LegalNature","description":"Legal documents.","links":["https://www.legalnature.com/"]},
+            {"category":"Legal and Compliance","title":"LegalShield","description":"Digital legal services.","links":["https://www.legalshield.com/"]},
+            {"category":"Legal and Compliance","title":"DoNotPay","description":"AI robot lawyer.","links":["https://donotpay.com/"]},
+            {"category":"Legal and Compliance","title":"SmallPDF","description":"E-signature tools.","links":["https://smallpdf.com/sign-pdf"]},
+            {"category":"Legal and Compliance","title":"SignWell","description":"E-signature.","links":["https://www.signwell.com/"]},
+            {"category":"HR and Recruitment","title":"Bambee","description":"HR services for small businesses.","links":["https://www.bambee.com/"]},
+            {"category":"HR and Recruitment","title":"Paycom","description":"HR and payroll software.","links":["https://www.paycom.com/"]},
+            {"category":"HR and Recruitment","title":"RecrooAI","description":"AI recruitment.","links":["https://recrooai.com/"]},
+            {"category":"HR and Recruitment","title":"Zleni","description":"Hiring evaluation.","links":["https://www.zleni.com/"]},
+            {"category":"HR and Recruitment","title":"PredictiveIndex","description":"Employee predictive analysis.","links":["https://www.predictiveindex.com/"]},
+            {"category":"Marketing and Design","title":"LogoMaker","description":"Free logo maker.","links":["https://www.logomaker.com/"]},
+            {"category":"Marketing and Design","title":"DesignBeast","description":"Graphic design.","links":["https://designbeastapp.com/Dashboard/Account/Login"]},
+            {"category":"Marketing and Design","title":"99Designs","description":"Graphic design services.","links":["https://99designs.com/"]},
+            {"category":"Marketing and Design","title":"Metricool","description":"Social media management.","links":["https://metricool.com/"]},
+            {"category":"Marketing and Design","title":"GetImg","description":"AI image generator.","links":["https://getimg.ai/"]},
+            {"category":"Real Estate and Investment","title":"DiversyFund","description":"Real estate investment.","links":["https://go.millennialmoney.com/diversyfund-reit/?pd00=23444"]},
+            {"category":"Real Estate and Investment","title":"Fundrise","description":"Real estate investment.","links":["https://fundrise.com/"]},
+            {"category":"Real Estate and Investment","title":"PropStream","description":"Real estate tools.","links":["https://trial.propstreampro.com/robuilt/"]},
+            {"category":"Real Estate and Investment","title":"Flippa","description":"Website flipping.","links":["https://www.flippa.com/"]},
+            {"category":"Real Estate and Investment","title":"Acquire","description":"Buy companies.","links":["https://acquire.com/"]},
+            {"category":"Business Management","title":"Auctria","description":"Online fundraising and auctions.","links":["https://www.auctria.com/features/"]},
+            {"category":"Communication Tools","title":"Tresta","description":"Digital phone for business.","links":["https://www.tresta.com/"]},
+            {"category":"Communication Tools","title":"Grasshopper","description":"Business phone.","links":["https://www.grasshopper.com/"]},
+            {"category":"Communication Tools","title":"Tello","description":"Cheap phone plans.","links":["https://tello.com/"]},
+            {"category":"Communication Tools","title":"HelloMobile","description":"$5/month phone.","links":["https://hellomobile.com/shop/plan/unlimited-talk-and-text-500mb"]},
+            {"category":"Communication Tools","title":"PDF24","description":"Send fax.","links":["https://fax.pdf24.org/"]},
+            {"category":"Document and Content Creation","title":"TypeAI","description":"AI-generated document writer.","links":["https://type.ai/"]},
+            {"category":"Document and Content Creation","title":"MoltarAI","description":"AI document reviewer.","links":["https://www.moltar.ai/"]},
+            {"category":"Document and Content Creation","title":"PDFParser","description":"AI PDF parser.","links":["https://pdfparser.io/"]},
+            {"category":"Document and Content Creation","title":"Canva","description":"eBook template site.","links":["https://aurelius.link/canva"]},
+            {"category":"Document and Content Creation","title":"Vizologi","description":"AI business plan generator.","links":["https://vizologi.com/"]},
+            {"category":"Document and Content Creation","title":"Microsoft 365","description":"MS Office free.","links":["https://www.microsoft.com/en-US/microsoft-365/free-office-online-for-the-web"]},
+            {"category":"Document and Content Creation","title":"eSigner","description":"Digital e-signer.","links":["https://www.esigner.com/"]},
+            {"category":"Government and Veteran Resources","title":"GovDirections","description":"Government proposals and RFPs.","links":["https://govdirections.com/"]},
+            {"category":"Government and Veteran Resources","title":"VA OSDBU","description":"VA small business resources.","links":["https://www.va.gov/osdbu/"]},
+            {"category":"Development and IT Services","title":"AppHive","description":"No-code app builder.","links":["https://apphive.io/pricing"]},
+            {"category":"Development and IT Services","title":"Dolibarr","description":"Business IT tools.","links":["https://www.dolibarr.org/"]},
+            {"category":"Development and IT Services","title":"SaaSPartner","description":"Tech team as a service.","links":["https://saaspartner.tech/"]},
+            {"category":"Development and IT Services","title":"MVP Contact","description":"For-hire dev team.","links":["https://mvp.contact/"]},
+            {"category":"Development and IT Services","title":"PseudoEditor","description":"Online code editor.","links":["https://pseudoeditor.com/"]},
+            {"category":"Development and IT Services","title":"HostedSoftware","description":"Open-source tools list.","links":["https://hostedsoftware.org/"]},
+            {"category":"Development and IT Services","title":"N-Able","description":"MSP services.","links":["https://www.n-able.com/"]},
+            {"category":"Scheduling and Productivity","title":"TidyCal","description":"Schedule booking tool.","links":["https://tidycal.com/"]},
+            {"category":"Health and Insurance","title":"AmericaFirstHealthcare","description":"Health insurance.","links":["https://americafirsthealthcare.com/0926b"]},
+            {"category":"Health and Insurance","title":"Ramp","description":"Business travel card.","links":["https://ramp.com/"]},
+            {"category":"Hardware and Manufacturing","title":"3D Printer Scanning","description":"3D scanning guide.","links":["https://www.youtube.com/watch?v=wlH9AC6eG_0"]},
+            {"category":"File and Data Management","title":"Pad4D2","description":"Google Drive alternative.","links":["https://pad.4d2.org/"]},
+            {"category":"Automation and AI","title":"HandoverAI","description":"Business process automation.","links":["https://www.handover.ai/"]},
+            {"category":"Local Business Networking","title":"Alignable","description":"Local business network.","links":["https://www.alignable.com/"]},
+            {"category":"Privacy and Security","title":"Cape","description":"Privacy phone service.","links":["https://www.cape.co/"]}
+            // All items added – no more manual additions needed
+        ];
+
+        function init() {
+            const savedData = localStorage.getItem('resourceLibrary');
+            if (savedData) {
+                resources = JSON.parse(savedData);
+            } else {
+                resources = initialResources;
+                saveToStorage();
+            }
+
+            populateCategorySelect();
+            renderCategoryFilters();
+            renderResources();
+            updateStats();
+
+            document.getElementById('searchInput').addEventListener('input', (e) => renderResources(e.target.value));
+        }
+
+        function populateCategorySelect() {
+            const select = document.getElementById('category');
+            select.innerHTML = '<option value="">Select a category</option>';
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                select.appendChild(option);
+            });
+        }
+
+        function renderCategoryFilters() {
+            const container = document.getElementById('categoryFilters');
+            container.innerHTML = '<div class="category-chip active" onclick="filterByCategory(&#39;all&#39;)">All</div>';
+
+            const usedCategories = [...new Set(resources.map(r => r.category))].sort();
+            usedCategories.forEach(cat => {
+                const chip = document.createElement('div');
+                chip.className = 'category-chip';
+                chip.textContent = cat;
+                chip.onclick = () => filterByCategory(cat);
+                container.appendChild(chip);
+            });
+        }
+
+        function filterByCategory(category) {
+            activeFilter = category;
+            document.querySelectorAll('.category-chip').forEach(chip => chip.classList.toggle('active', (category === 'all' && chip.textContent === 'All') || chip.textContent === category));
+            renderResources(document.getElementById('searchInput').value);
+        }
+
+        function renderResources(searchTerm = '') {
+            const grid = document.getElementById('resourcesGrid');
+            const emptyState = document.getElementById('emptyState');
+            let filtered = resources;
+
+            if (activeFilter !== 'all') filtered = filtered.filter(r => r.category === activeFilter);
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                filtered = filtered.filter(r => r.title.toLowerCase().includes(term) || r.description.toLowerCase().includes(term) || r.category.toLowerCase().includes(term));
+            }
+
+            grid.style.display = filtered.length ? 'grid' : 'none';
+            emptyState.style.display = filtered.length ? 'none' : 'block';
             grid.innerHTML = '';
-            data.forEach(tool => {
+
+            filtered.forEach(resource => {
                 const card = document.createElement('div');
-                card.className = 'tool-card bg-white rounded-2xl shadow-md p-6 border border-gray-200 transition cursor-pointer';
-                card.onclick = () => window.open(tool.link, '_blank');
+                card.className = 'resource-card';
+                const linksHtml = resource.links.length ? resource.links.map(l => `<a href="${l}" target="_blank" rel="noopener" class="resource-link">${l}</a>`).join('') : '<em>No links yet</em>';
                 card.innerHTML = `
-                    <h3 class="text-lg font-bold text-indigo-700 mb-2">${tool.name}</h3>
-                    <p class="text-sm text-gray-600 mb-4">${tool.category}</p>
-                    <a href="${tool.link}" target="_blank" class="text-indigo-500 text-sm hover:underline truncate block">${tool.link}</a>
+                    <div class="resource-category">${resource.category}</div>
+                    <div class="resource-title">${resource.title}</div>
+                    <div class="resource-description">${resource.description || ''}</div>
+                    <div class="resource-links">${linksHtml}</div>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        // Filter by category
-        function filterBy(category, element) {
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active-cat'));
-            element.classList.add('active-cat');
-            if (category === 'All') {
-                renderTools(toolsData);
-            } else {
-                renderTools(toolsData.filter(tool => tool.category === category));
-            }
+        function updateStats() {
+            document.getElementById('totalResources').textContent = resources.length;
+            document.getElementById('totalCategories').textContent = new Set(resources.map(r => r.category)).size;
         }
 
-        // Search
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase();
-            const filtered = toolsData.filter(tool => 
-                tool.name.toLowerCase().includes(query) ||
-                tool.category.toLowerCase().includes(query) ||
-                tool.link.toLowerCase().includes(query)
-            );
-            renderTools(filtered);
-        });
-
-        // Add new tool
-        function addNewTool() {
-            const name = document.getElementById('newName').value.trim();
-            const category = document.getElementById('newCategory').value;
-            const link = document.getElementById('newLink').value.trim();
-
-            if (name && category && link) {
-                toolsData.push({ name, category, link });
-                renderTools(toolsData);
-                document.getElementById('newName').value = '';
-                document.getElementById('newLink').value = '';
-                document.getElementById('addFormContainer').classList.add('hidden');
-                alert('Tool added successfully (live view only)');
-            } else {
-                alert('Please fill all fields');
-            }
+        function openAddModal() {
+            document.getElementById('addModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
-        // Initial render
-        renderTools(toolsData);
+        function closeAddModal() {
+            document.getElementById('addModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('resourceForm').reset();
+            document.getElementById('linksContainer').innerHTML = `<div class="link-input-group"><input type="url" placeholder="https://example.com" class="link-input"><button type="button" class="btn btn-danger btn-small" onclick="removeLink(this)">Remove</button></div>`;
+        }
+
+        function addLinkField() {
+            const container = document.getElementById('linksContainer');
+            const group = document.createElement('div');
+            group.className = 'link-input-group';
+            group.innerHTML = `<input type="url" placeholder="https://example.com" class="link-input"><button type="button" class="btn btn-danger btn-small" onclick="removeLink(this)">Remove</button>`;
+            container.appendChild(group);
+        }
+
+        function removeLink(btn) {
+            if (document.querySelectorAll('.link-input-group').length > 1) btn.parentElement.remove();
+        }
+
+        function saveResource(e) {
+            e.preventDefault();
+            const category = document.getElementById('category').value;
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const links = Array.from(document.querySelectorAll('.link-input')).map(i => i.value.trim()).filter(l => l);
+
+            resources.unshift({category, title, description, links});
+            saveToStorage();
+            renderCategoryFilters();
+            renderResources();
+            updateStats();
+            closeAddModal();
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('resourceLibrary', JSON.stringify(resources));
+        }
+
+        function exportData() {
+            const blob = new Blob([JSON.stringify(resources, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `resource-library-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (confirm(`Import ${data.length} resources? This will replace current data.`)) {
+                        resources = data;
+                        saveToStorage();
+                        renderCategoryFilters();
+                        renderResources();
+                        updateStats();
+                    }
+                } catch {
+                    alert('Invalid JSON file');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+
+        init();
     </script>
-</body>
+
 </html>
