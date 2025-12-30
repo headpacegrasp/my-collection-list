@@ -416,9 +416,7 @@
                 <button class="btn btn-secondary" onclick="document.getElementById(&#39;importFile&#39;).click()">⬆ Import Data</button>
                 <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
             </div>
-
-            <div class="category-filters" id="categoryFilters"></div>
-
+			
             <div class="stats">
                 <div class="stat-card">
                     <span class="stat-number" id="totalResources">0</span>
@@ -429,6 +427,10 @@
                     <span>Categories</span>
                 </div>
             </div>
+
+            <div class="category-filters" id="categoryFilters"></div>
+
+
         </header>
 
         <div class="resources-grid" id="resourcesGrid"></div>
