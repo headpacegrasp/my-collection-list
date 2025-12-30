@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Tools & Links Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tool-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .active-cat { background-color: #4f46e5 !important; color: white !important; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+    <header class="bg-indigo-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-8 text-center">
+            <h1 class="text-4xl font-extrabold mb-2">My IT Toolkit</h1>
+            <p class="text-indigo-100">Quickly find and manage your collected resources</p>
+        </div>
+    </header>
+    
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto flex flex-col md:flex-row gap-4 mb-8">
+            <input type="text" id="searchInput" placeholder="Search tools, links, or categories..." class="flex-1 p-4 rounded-xl border-none shadow-sm focus:ring-4 focus:ring-indigo-200 outline-none text-lg">
+            <button onclick="document.getElementById('addFormContainer').classList.toggle('hidden')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-xl transition shadow-sm"> + Add New Tool </button>
+        </div>
+        
+        <div id="addFormContainer" class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-lg border-2 border-green-100 mb-10 hidden">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">Direct Entry to List</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input type="text" id="newName" placeholder="Tool Name" class="p-3 bg-gray-50 border rounded-lg outline-indigo-500">
+                <select id="newCategory" class="p-3 bg-gray-50 border rounded-lg outline-indigo-500">
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="AI and Machine Learning">AI and Machine Learning</option>
+                    <option value="Analytics and Reporting">Analytics and Reporting</option>
+                    <option value="Cybersecurity and Hacking">Cybersecurity and Hacking</option>
+                    <option value="Database Management">Database Management</option>
+                    <option value="Development and DevOps">Development and DevOps</option>
+                    <option value="File and Data Management">File and Data Management</option>
+                    <option value="Hardware and Manufacturing">Hardware and Manufacturing</option>
+                    <option value="Linux Resources">Linux Resources</option>
+                    <option value="Media and Design">Media and Design</option>
+                    <option value="Media Conversion and Archiving">Media Conversion and Archiving</option>
+                    <option value="Miscellaneous">Miscellaneous</option>
+                    <option value="Networking and Cloud">Networking and Cloud</option>
+                    <option value="Operating Systems">Operating Systems</option>
+                    <option value="Privacy and Security">Privacy and Security</option>
+                    <option value="Productivity and Collaboration">Productivity and Collaboration</option>
+                    <option value="Remote Access and Management">Remote Access and Management</option>
+                    <option value="Software Installation and Management">Software Installation and Management</option>
+                    <option value="Virtualization and Emulation">Virtualization and Emulation</option>
+                    <option value="Website Development">Website Development</option>
+                    <option value="Windows Management">Windows Management</option>
+                </select>
+                <input type="text" id="newLink" placeholder="URL[](https://...)" class="p-3 bg-gray-50 border rounded-lg outline-indigo-500">
+            </div>
+            <button onclick="addNewTool()" class="mt-4 w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition"> Add to Live View </button>
+        </div>
+        
+        <div id="filterBar" class="flex flex-wrap gap-2 justify-center mb-10">
+            <button onclick="filterBy('All', this)" class="filter-btn px-5 py-2 rounded-full border bg-white font-semibold transition active-cat">All</button>
+        </div>
+        
+        <div id="toolGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Tools will be dynamically inserted here -->
+        </div>
+    </main>
+
+    <script>
+        let toolsData = [
+            // Database Management
+            { name: "Prisma Blog - Database Types Comparison", category: "Database Management", link: "https://www.prisma.io/blog/comparison-of-database-models-1iz9u29nwn37" },
+            { name: "DataView", category: "Database Management", link: "https://dv.dbb1.dev" },
+            { name: "SheetJS", category: "Database Management", link: "https://github.com/SheetJS/js-xlsx" },
+            { name: "JExcel", category: "Database Management", link: "https://bossanova.uk/jexcel/v3/" },
+            { name: "TablesGenerator", category: "Database Management", link: "https://www.tablesgenerator.com/" },
+            { name: "DrawDB - Database Design Diagramming", category: "Database Management", link: "https://www.drawdb.app/" },
+            { name: "RankRed - Test Data Generation Tools", category: "Database Management", link: "https://www.rankred.com/test-data-generation-tools/" },
+            { name: "Mockaroo - Mock Data & APIs", category: "Database Management", link: "https://mockaroo.com/mock_apis" },
+            { name: "SQLEdit - Data Migration Tool", category: "Database Management", link: "http://www.sqledit.com/mk/index.html" },
+            { name: "SQLime - SQL Sandbox", category: "Database Management", link: "https://sqlime.org/" },
+
+            // Operating Systems
+            { name: "PureOS", category: "Operating Systems", link: "https://pureos.net/" },
+            { name: "GrapheneOS", category: "Operating Systems", link: "https://grapheneos.org/" },
+            { name: "Qubes OS", category: "Operating Systems", link: "https://www.qubes-os.org/intro/" },
+            { name: "ReactOS", category: "Operating Systems", link: "https://www.reactos.org/" },
+            { name: "BlissOS", category: "Operating Systems", link: "https://www.blissos.org/" },
+            { name: "LinuxServer - Docker Images", category: "Operating Systems", link: "https://fleet.linuxserver.io/" },
+
+            // Linux Resources
+            { name: "RedHat Cheat Sheet", category: "Linux Resources", link: "https://developers.redhat.com/promotions/linux-cheatsheet/" },
+            { name: "SSH Commands Cheat Sheet", category: "Linux Resources", link: "https://www.redhat.com/sysadmin/ssh-file-copy-magic" },
+            { name: "Linux Shell Tips", category: "Linux Resources", link: "https://www.linuxshelltips.com/ssh-commands-cheat-sheet/" },
+            { name: "OSTechnix - Record Terminal", category: "Linux Resources", link: "https://www.ostechnix.com/record-everything-terminal/" },
+            { name: "Commandlinefu", category: "Linux Resources", link: "https://www.commandlinefu.com/commands/browse/sort-by-votes" },
+            { name: "Linux Hardening Guide", category: "Linux Resources", link: "https://madaidans-insecurities.github.io/guides/linux-hardening.html#firewalls" },
+            { name: "TurnKey Linux", category: "Linux Resources", link: "https://www.turnkeylinux.org/all" },
+
+            // Windows Management
+            { name: "SysInfoTools - Move Program Files", category: "Windows Management", link: "https://www.sysinfotools.com/blog/steps-to-move-program-files-to-another-drive-in-windows/" },
+            { name: "Microsoft Privacy Settings", category: "Windows Management", link: "https://account.microsoft.com/privacy/" },
+            { name: "ChrisTitusTech Winutil", category: "Windows Management", link: "https://github.com/ChrisTitusTech/winutil" },
+            { name: "Win11Debloat", category: "Windows Management", link: "https://github.com/Raphire/Win11Debloat" },
+            { name: "CTT Store", category: "Windows Management", link: "https://cttstore.com/?utm_source=youtube&utm_medium=product_shelf" },
+            { name: "UUPDump - Windows ISOs", category: "Windows Management", link: "https://uupdump.net/" },
+            { name: "Windows 10 Exorcist - Block Tracking", category: "Windows Management", link: "https://github.com/MegaphatNetworks/Windows-10-Exorcist-v1" },
+            { name: "PowerShell Bloatware Removal Scripts (YouTube)", category: "Windows Management", link: "https://www.youtube.com/results?search_query=remove+windows+bloatware+powershell+script" },
+
+            // Privacy and Security
+            { name: "Privacy Guides / RestorePrivacy / PrivacyTools", category: "Privacy and Security", link: "https://www.privacyguides.org/" },
+            { name: "Fingbox Firewall (YouTube)", category: "Privacy and Security", link: "https://www.youtube.com/results?search_query=fingbox" },
+            { name: "10MinuteMail - Temp Email (YouTube)", category: "Privacy and Security", link: "https://10minutemail.com/" },
+            { name: "Show WiFi Password Trick (YouTube)", category: "Privacy and Security", link: "https://www.youtube.com/results?search_query=show+wifi+password+windows" },
+            { name: "BrowserLeaks", category: "Privacy and Security", link: "https://browserleaks.com/" },
+            { name: "Have I Been Pwned / LeakCheck / DeHashed", category: "Privacy and Security", link: "https://haveibeenpwned.com/" },
+            { name: "AnonAddy / SimpleLogin - Anonymous Email", category: "Privacy and Security", link: "https://anonaddy.com/" },
+            { name: "AdNauseam - Adblocker", category: "Privacy and Security", link: "https://adnauseam.io/" },
+            { name: "Wormhole - Secure File Transfer", category: "Privacy and Security", link: "https://wormhole.app/" },
+            { name: "Cryptomator - File Encryption", category: "Privacy and Security", link: "https://cryptomator.org/" },
+            { name: "VirusTotal", category: "Privacy and Security", link: "https://www.virustotal.com/" },
+            { name: "Raspberry Pi Hardening Guides", category: "Privacy and Security", link: "https://pimylifeup.com/raspberry-pi-security/" },
+            { name: "ZeroTier - Decentralized VPN", category: "Privacy and Security", link: "https://www.zerotier.com/" },
+
+            // Networking and Cloud
+            { name: "Linode Cloud Servers", category: "Networking and Cloud", link: "https://www.linode.com/" },
+            { name: "Oracle Cloud Free Tier", category: "Networking and Cloud", link: "https://www.oracle.com/cloud/free/" },
+            { name: "InfinityFree / FreeHosting", category: "Networking and Cloud", link: "https://infinityfree.net/" },
+            { name: "Cloudflare DNS (Malware Block)", category: "Networking and Cloud", link: "https://1.1.1.2/" },
+            { name: "Freenom / DuckDNS - Free DNS", category: "Networking and Cloud", link: "https://www.freenom.com/" },
+            { name: "Cloudcraft - AWS Design", category: "Networking and Cloud", link: "https://cloudcraft.co/" },
+            { name: "LocalStack - Local Cloud Emulator", category: "Networking and Cloud", link: "https://localstack.cloud/" },
+            { name: "Storj - Decentralized Storage", category: "Networking and Cloud", link: "https://storj.io/" },
+            { name: "Meshtastic - Mesh Network (YouTube)", category: "Networking and Cloud", link: "https://meshtastic.org/" },
+            { name: "EasyDNS - Anti-Cancel DNS", category: "Networking and Cloud", link: "https://easydns.com/" },
+            { name: "Epik - Free Speech Hosting", category: "Networking and Cloud", link: "https://www.epik.com/" },
+            { name: "VanwaTech - DDoS Protection", category: "Networking and Cloud", link: "https://vanwatech.com/" },
+            { name: "CountryIPBlocks - IP Ranges", category: "Networking and Cloud", link: "https://www.countryipblocks.net/" },
+
+            // Development and DevOps
+            { name: "Developer Roadmap (GitHub)", category: "Development and DevOps", link: "https://github.com/kamranahmedse/developer-roadmap" },
+            { name: "DevOps Roadmap (GitHub)", category: "Development and DevOps", link: "https://github.com/milanm/DevOps-Roadmap" },
+            { name: "Ansible Resources / Crash Course", category: "Development and DevOps", link: "https://www.ansible.com/resources" },
+            { name: "Kubernetes Academy", category: "Development and DevOps", link: "https://kubernetes.io/training/" },
+            { name: "Container Platform eBook (LeanPub)", category: "Development and DevOps", link: "https://leanpub.com/" },
+            { name: "Pipedream - API Automation", category: "Development and DevOps", link: "https://pipedream.com/" },
+            { name: "GitHub Marketplace", category: "Development and DevOps", link: "https://github.com/marketplace" },
+            { name: "No-Code Tools: Retool, AppSumo, Softr, GlideApps, etc.", category: "Development and DevOps", link: "https://retool.com/" },
+            { name: "Wireframing: Whimsical / Wireflow", category: "Development and DevOps", link: "https://whimsical.com/" },
+            { name: "PseudoEditor - Online Code Editor", category: "Development and DevOps", link: "https://pseudoeditor.com/" },
+            { name: "CodeSandbox - Coding Sandbox", category: "Development and DevOps", link: "https://codesandbox.io/" },
+            { name: "CTO Guide (GitHub)", category: "Development and DevOps", link: "https://github.com/ZachGoldberg/Startup-CTO-Handbook" },
+
+            // Website Development
+            { name: "Website Builders: Site123, Silex, Webador, NicePage, Odoo, etc.", category: "Website Development", link: "https://site123.com/" },
+            { name: "Pagey - Free Website Hosting", category: "Website Development", link: "https://pagey.site/" },
+            { name: "Free WordPress Themes (Various)", category: "Website Development", link: "https://wordpress.org/themes/" },
+            { name: "WPThemeDetector", category: "Website Development", link: "https://www.wpthemedetector.com/" },
+            { name: "Migrate WordPress (YouTube)", category: "Website Development", link: "https://www.youtube.com/results?search_query=migrate+wordpress+website" },
+            { name: "Relume - AI Website Layout Generator", category: "Website Development", link: "https://www.relume.io/" },
+            { name: "GTMetrix - Website Speed Testing", category: "Website Development", link: "https://gtmetrix.com/" },
+            { name: "Website Checker: BuiltWith / Netcraft / WebCheck", category: "Website Development", link: "https://builtwith.com/" },
+            { name: "RankMath - SEO", category: "Website Development", link: "https://rankmath.com/" },
+            { name: "Termly / Termageddon - Policy Generators", category: "Website Development", link: "https://termly.io/" },
+            { name: "SingleFile - Save Webpage as HTML", category: "Website Development", link: "https://github.com/gildas-lormeau/SingleFile" },
+            { name: "Free/Low-Cost Hosting: InfinityFree, Ionos, Hostinger", category: "Website Development", link: "https://infinityfree.net/" },
+            { name: "1-Click Deployment: DigitalOcean / Bitnami", category: "Website Development", link: "https://marketplace.digitalocean.com/" },
+            { name: "Convert Website to App: GoNative, AppsGeyser, etc.", category: "Website Development", link: "https://gonative.io/" },
+            { name: "FindDomain - AI Domain Names", category: "Website Development", link: "https://finddomain.ai/" },
+
+            // Cybersecurity and Hacking
+            { name: "Dont-Hack.me - Ethical Hacking Resources", category: "Cybersecurity and Hacking", link: "https://dont-hack.me/" },
+            { name: "Offensive Security Labs", category: "Cybersecurity and Hacking", link: "https://www.offensive-security.com/labs/" },
+            { name: "CobaltStrike - Offensive Tool", category: "Cybersecurity and Hacking", link: "https://www.cobaltstrike.com/" },
+            { name: "Andrax - Android Hacking", category: "Cybersecurity and Hacking", link: "https://andrax.thecrackertechnology.com/" },
+            { name: "NMMappers - SSL Trust Checker", category: "Cybersecurity and Hacking", link: "https://nmmappers.com/" },
+            { name: "LetsEncrypt - Free CA", category: "Cybersecurity and Hacking", link: "https://letsencrypt.org/" },
+            { name: "DeliciousBrains - Local SSL Certificate", category: "Cybersecurity and Hacking", link: "https://deliciousbrains.com/ssl-certificate-authority-for-local-https-development/" },
+            { name: "VM Hardening / STIGs (StackExchange)", category: "Cybersecurity and Hacking", link: "https://security.stackexchange.com/" },
+            { name: "OSINT Data Report (Medium)", category: "Cybersecurity and Hacking", link: "https://medium.com/" },
+            { name: "Firewall Testing (LinkedIn)", category: "Cybersecurity and Hacking", link: "https://www.linkedin.com/" },
+            { name: "Kali Purple - SOC in a Box", category: "Cybersecurity and Hacking", link: "https://www.kali.org/docs/purple/" },
+
+            // AI and Machine Learning (expanded with sub-items)
+            { name: "MachineLearningMastery - Bayes Theorem for ML", category: "AI and Machine Learning", link: "https://machinelearningmastery.com/" },
+            { name: "290 Machine Learning Projects (Medium)", category: "AI and Machine Learning", link: "https://medium.com/" },
+            { name: "There's an AI for That", category: "AI and Machine Learning", link: "https://theresanaiforthat.com/" },
+            { name: "AI Tools List (GitHub / AIUncensored)", category: "AI and Machine Learning", link: "https://github.com/topics/ai-tools" },
+            { name: "AI Chatbots: ChatterDocs, ChatPDF, CustomGPT, Perplexity, etc.", category: "AI and Machine Learning", link: "https://www.perplexity.ai/" },
+            { name: "AI Document Tools: TypeAI, EditAway, PDFParser, etc.", category: "AI and Machine Learning", link: "https://www.chatpdf.com/" },
+            { name: "AI Image/Media: GetImg, ProPhotos, AI-Flux, SunoAI, etc.", category: "AI and Machine Learning", link: "https://getimg.ai/" },
+            { name: "AI Writing: StealthWriter, Speechelo, BookWriters, etc.", category: "AI and Machine Learning", link: "https://stealthwriter.ai/" },
+            { name: "AI Training/Testing: GuidesAI, MockInterviews, TestSigma", category: "AI and Machine Learning", link: "https://testsigma.com/" },
+            { name: "Self-Hosted AI: H2OAI, GPT4All, SecureAI-Tools", category: "AI and Machine Learning", link: "https://gpt4all.io/" },
+            { name: "Gretel - Synthetic Data Generator", category: "AI and Machine Learning", link: "https://gretel.ai/" },
+            { name: "FlowGPT - AI Prompt Library", category: "AI and Machine Learning", link: "https://flowgpt.com/" },
+            { name: "VeniceAI - Uncensored AI", category: "AI and Machine Learning", link: "https://venice.ai/" },
+            { name: "EliteGPT / AIAnswerGenerator - All-in-One AI", category: "AI and Machine Learning", link: "https://elitegpt.ai/" },
+            { name: "AIHub - AI OCR Tool", category: "AI and Machine Learning", link: "https://aihub.com/" },
+            { name: "Imagica - AI App Builder", category: "AI and Machine Learning", link: "https://imagica.ai/" },
+            { name: "Bolt.new / StackBlitz / AskCyph - App/Website Builder", category: "AI and Machine Learning", link: "https://bolt.new/" },
+
+            // Remote Access and Management
+            { name: "Google Remote Desktop", category: "Remote Access and Management", link: "https://remotedesktop.google.com/" },
+            { name: "RemoteUtilities", category: "Remote Access and Management", link: "https://www.remoteutilities.com/" },
+            { name: "Android Remote: AirMore, Vysor, Mobizen, etc.", category: "Remote Access and Management", link: "https://airmore.com/" },
+            { name: "Symless - Multi-Computer Control", category: "Remote Access and Management", link: "https://symless.com/" },
+            { name: "CyberCafe.space - Remote Window Machine", category: "Remote Access and Management", link: "https://cybercafe.space/" },
+
+            // Software Installation and Management
+            { name: "Ninite - Bulk Install", category: "Software Installation and Management", link: "https://ninite.com/" },
+            { name: "Silent Install Tools (AprelTech / Softpedia)", category: "Software Installation and Management", link: "https://www.softpedia.com/" },
+            { name: "Seizent - One-Click Installer", category: "Software Installation and Management", link: "https://seizent.com/" },
+            { name: "FossHub - Software Downloads", category: "Software Installation and Management", link: "https://fosshub.com/" },
+
+            // File and Data Management
+            { name: "Dan’s Tools - Conversion (CSV to JSON etc.)", category: "File and Data Management", link: "https://danstools.com/" },
+            { name: "Convertio - File Conversion", category: "File and Data Management", link: "https://convertio.co/" },
+            { name: "PDF Tools: EasePDF, ILovePDF, HongKiat, etc.", category: "File and Data Management", link: "https://www.ilovepdf.com/" },
+            { name: "DocuSeal - DocuSign Alternative", category: "File and Data Management", link: "https://www.docuseal.co/" },
+            { name: "Issuu - PDF to Flipbook", category: "File and Data Management", link: "https://issuu.com/" },
+            { name: "DBAN - Disk Wipe", category: "File and Data Management", link: "https://dban.org/" },
+            { name: "Veeam - Free Backup Solutions", category: "File and Data Management", link: "https://www.veeam.com/" },
+            { name: "BleachBit - Wipe Disk Space", category: "File and Data Management", link: "https://www.bleachbit.org/" },
+            { name: "Tresorit - Secure Storage & Sharing", category: "File and Data Management", link: "https://tresorit.com/" },
+
+            // Media and Design
+            { name: "3D Scanning: Meshroom / MeshLab", category: "Media and Design", link: "https://alicevision.org/" },
+            { name: "Photogrammetry for 3D Printing (PrusaPrinters)", category: "Media and Design", link: "https://www.prusaprinters.org/" },
+            { name: "3D Design Software (YouTube)", category: "Media and Design", link: "https://www.youtube.com/results?search_query=3d+design+software" },
+            { name: "Image Editing: HotPot, AKVIS Retoucher, LamaCleaner, etc.", category: "Media and Design", link: "https://hotpot.ai/" },
+            { name: "Free Stock Images: IsoRepublic, Pixabay, Unsplash, etc.", category: "Media and Design", link: "https://isorepublic.com/" },
+            { name: "Icon Libraries: Iconify, MynaUI, Iconshelf", category: "Media and Design", link: "https://iconify.design/" },
+            { name: "Figma - Adobe Illustrator Alternative (YouTube)", category: "Media and Design", link: "https://www.figma.com/" },
+            { name: "Recraft - Vector Generator", category: "Media and Design", link: "https://www.recraft.ai/" },
+            { name: "PhotoEnlarger", category: "Media and Design", link: "https://photoenlarger.com/" },
+            { name: "Drawing Tools: Excalidraw, DGM", category: "Media and Design", link: "https://excalidraw.com/" },
+            { name: "ColorCore - Color Generator", category: "Media and Design", link: "https://colorcore.app/" },
+            { name: "WordClouds - Word Cloud Generator", category: "Media and Design", link: "https://www.wordclouds.com/" },
+            { name: "Toolbrew - Multi Tools", category: "Media and Design", link: "https://toolbrew.co/" },
+            { name: "OBS Project - Streaming/Recording", category: "Media and Design", link: "https://obsproject.com/" },
+
+            // Productivity and Collaboration
+            { name: "Kanban: Trello / Planka (Open-source)", category: "Productivity and Collaboration", link: "https://trello.com/" },
+            { name: "Notion - Free Productivity App", category: "Productivity and Collaboration", link: "https://www.notion.so/" },
+            { name: "Jitsi - Open-Source Video Conferencing", category: "Productivity and Collaboration", link: "https://jitsi.org/" },
+            { name: "JS.Wiki - Open-Source Wiki Tool", category: "Productivity and Collaboration", link: "https://js.wiki/" },
+            { name: "Private Collaboration: Riseup Wikis/Pad/Share", category: "Productivity and Collaboration", link: "https://riseup.net/" },
+            { name: "Asana - Free IT Project Management", category: "Productivity and Collaboration", link: "https://asana.com/" },
+            { name: "TidyCal - Schedule Booking", category: "Productivity and Collaboration", link: "https://tidycal.com/" },
+            { name: "Process.st - Process Templates", category: "Productivity and Collaboration", link: "https://www.process.st/" },
+            { name: "SmartSheet - Policy Templates", category: "Productivity and Collaboration", link: "https://www.smartsheet.com/" },
+            { name: "Metricool - Social Media Management", category: "Productivity and Collaboration", link: "https://metricool.com/" },
+            { name: "SNote - Privacy-Focused Notes", category: "Productivity and Collaboration", link: "https://snote.app/" },
+            { name: "Federated - Privacy Business Suite", category: "Productivity and Collaboration", link: "https://fediverse.party/" },
+            { name: "Bitrix24 - ERP Tool", category: "Productivity and Collaboration", link: "https://www.bitrix24.com/" },
+
+            // Hardware and Manufacturing
+            { name: "EccentricWorkshop - CNC Controller", category: "Hardware and Manufacturing", link: "https://www.eccentricworkshop.com/" },
+            { name: "JLCPCB - PCB Manufacturing", category: "Hardware and Manufacturing", link: "https://jlcpcb.com/" },
+            { name: "LowCostMiniPCs - Mini PCs", category: "Hardware and Manufacturing", link: "https://www.lowcostminipcs.com/" },
+            { name: "Pi-hole Adblock (LinusTechTips YouTube)", category: "Hardware and Manufacturing", link: "https://pi-hole.net/" },
+            { name: "NAS Options: TrueNAS, OpenMediaVault, CasaOS, ZimaOS", category: "Hardware and Manufacturing", link: "https://www.truenas.com/" },
+            { name: "FreeNAS with Plex Setup (YouTube)", category: "Hardware and Manufacturing", link: "https://www.youtube.com/results?search_query=freenas+plex+setup" },
+
+            // Virtualization and Emulation
+            { name: "OSBoxes - Virtual Images", category: "Virtualization and Emulation", link: "https://www.osboxes.org/" },
+            { name: "YouWave - Android Emulator", category: "Virtualization and Emulation", link: "https://www.youwave.com/" },
+            { name: "Browser.lol / KasmWeb - Browser-Based Desktop", category: "Virtualization and Emulation", link: "https://browser.lol/" },
+
+            // Media Conversion and Archiving
+            { name: "HandBrake - Video Format Conversion", category: "Media Conversion and Archiving", link: "https://handbrake.fr/" },
+            { name: "MakeMKV - DVD/CD Ripping", category: "Media Conversion and Archiving", link: "https://www.makemkv.com/" },
+            { name: "Metube - Video Downloader", category: "Media Conversion and Archiving", link: "https://github.com/alexta69/metube" },
+            { name: "UnlimitedWeb - YouTube Downloader", category: "Media Conversion and Archiving", link: "https://unlimitedweb.com/" },
+            { name: "Archive.org - CDs/TV/Software Archive", category: "Media Conversion and Archiving", link: "https://archive.org/" },
+            { name: "RecordingToText - Voice to Text", category: "Media Conversion and Archiving", link: "https://www.youtube.com/results?search_query=voice+recording+to+text" },
+
+            // Analytics and Reporting
+            { name: "Matomo - Google Analytics Alternative", category: "Analytics and Reporting", link: "https://matomo.org/" },
+            { name: "DataReportal - Digital Trends", category: "Analytics and Reporting", link: "https://datareportal.com/" },
+            { name: "OpenPaymentsData - Doctor Payment Database", category: "Analytics and Reporting", link: "https://openpaymentsdata.cms.gov/" },
+
+            // Miscellaneous
+            { name: "MultiBoot USB: Easy2Boot, Ventoy, YUMI", category: "Miscellaneous", link: "https://www.ventoy.net/" },
+            { name: "QR Code Generators", category: "Miscellaneous", link: "https://www.qr-code-generator.com/" },
+            { name: "URL Shorteners: Grabify, Shlink, Minifi", category: "Miscellaneous", link: "https://grabify.link/" },
+            { name: "Linktree - Link Sharing", category: "Miscellaneous", link: "https://linktr.ee/" },
+            { name: "Encyclosphere - Decentralized Knowledge", category: "Miscellaneous", link: "https://encyclosphere.org/" },
+            { name: "Everipedia - Wikipedia on Blockchain", category: "Miscellaneous", link: "https://everipedia.org/" },
+            { name: "Ghost - Independent Publishing", category: "Miscellaneous", link: "https://ghost.org/" },
+            { name: "Uniswap - Decentralized Trading", category: "Miscellaneous", link: "https://uniswap.org/" },
+            { name: "OpenLibrary - Digital Library", category: "Miscellaneous", link: "https://openlibrary.org/" },
+            { name: "ChristianCollegeGuide", category: "Miscellaneous", link: "https://www.christiancollegeguide.net/" },
+            { name: "Ahrefs - Google Search Tips", category: "Miscellaneous", link: "https://ahrefs.com/blog/google-advanced-search-operators/" },
+            { name: "OOH Directory - Blog Collection", category: "Miscellaneous", link: "https://oohdirectory.com/" },
+            { name: "BearBlog - Privacy Blog Platform", category: "Miscellaneous", link: "https://bearblog.dev/" },
+            { name: "TechSoup - Nonprofit Discounts", category: "Miscellaneous", link: "https://www.techsoup.org/" },
+            { name: "IT-Tools Collection", category: "Miscellaneous", link: "https://it-tools.tech/" },
+            { name: "HostedSoftware - Hosted Open-Source", category: "Miscellaneous", link: "https://hostedsoftware.com/" },
+            { name: "Ethical.net - Ethical Alternatives", category: "Miscellaneous", link: "https://ethical.net/" },
+            { name: "AlternativeTo - Alternatives List", category: "Miscellaneous", link: "https://alternativeto.net/" },
+            { name: "FreeToolSuite", category: "Miscellaneous", link: "https://freetoolsuite.com/" },
+            { name: "PassportMaker - Passport Photo", category: "Miscellaneous", link: "https://passportmaker.com/" },
+            { name: "NoMoreCopyright - No-Copyright Images", category: "Miscellaneous", link: "https://nomorecopyright.com/" },
+            { name: "Degooglisons / Framasoft - Google Alternatives", category: "Miscellaneous", link: "https://degooglisons-internet.org/" },
+            { name: "CodeScene - Brooke’s Law Visualization", category: "Miscellaneous", link: "https://codescene.com/" },
+            { name: "Awesome-Selfhosted / Selfh.st", category: "Miscellaneous", link: "https://awesome-selfhosted.net/" },
+            { name: "KeithCirkel - Homelab Guide", category: "Miscellaneous", link: "https://keithcirkel.co.uk/" },
+            { name: "Self-Hosted PDF Tool (YouTube)", category: "Miscellaneous", link: "https://www.youtube.com/results?search_query=self+hosted+pdf+tool" },
+            { name: "Integrately - Integration SaaS", category: "Miscellaneous", link: "https://integrately.com/" },
+            { name: "SnipeIT - IT Asset Management", category: "Miscellaneous", link: "https://snipeitapp.com/" },
+            { name: "ToS;DR - Terms of Service Reader", category: "Miscellaneous", link: "https://tosdr.org/" },
+            { name: "WebArchive - Website Archive", category: "Miscellaneous", link: "https://web.archive.org/" },
+            { name: "VP.net - Private VPN", category: "Miscellaneous", link: "https://vp.net/" },
+            { name: "Awesome-Selfhosted Ticketing", category: "Miscellaneous", link: "https://awesome-selfhosted.net/tags/ticketing.html" }
+        ];
+
+        // Generate category filter buttons
+        const categories = [...new Set(toolsData.map(tool => tool.category))].sort();
+        const filterBar = document.getElementById('filterBar');
+        categories.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.textContent = cat;
+            btn.className = 'filter-btn px-5 py-2 rounded-full border bg-white font-semibold transition';
+            btn.onclick = function() { filterBy(cat, this); };
+            filterBar.appendChild(btn);
+        });
+
+        // Render tools
+        function renderTools(data) {
+            const grid = document.getElementById('toolGrid');
+            grid.innerHTML = '';
+            data.forEach(tool => {
+                const card = document.createElement('div');
+                card.className = 'tool-card bg-white rounded-2xl shadow-md p-6 border border-gray-200 transition cursor-pointer';
+                card.onclick = () => window.open(tool.link, '_blank');
+                card.innerHTML = `
+                    <h3 class="text-lg font-bold text-indigo-700 mb-2">${tool.name}</h3>
+                    <p class="text-sm text-gray-600 mb-4">${tool.category}</p>
+                    <a href="${tool.link}" target="_blank" class="text-indigo-500 text-sm hover:underline truncate block">${tool.link}</a>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Filter by category
+        function filterBy(category, element) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active-cat'));
+            element.classList.add('active-cat');
+            if (category === 'All') {
+                renderTools(toolsData);
+            } else {
+                renderTools(toolsData.filter(tool => tool.category === category));
+            }
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const filtered = toolsData.filter(tool => 
+                tool.name.toLowerCase().includes(query) ||
+                tool.category.toLowerCase().includes(query) ||
+                tool.link.toLowerCase().includes(query)
+            );
+            renderTools(filtered);
+        });
+
+        // Add new tool
+        function addNewTool() {
+            const name = document.getElementById('newName').value.trim();
+            const category = document.getElementById('newCategory').value;
+            const link = document.getElementById('newLink').value.trim();
+
+            if (name && category && link) {
+                toolsData.push({ name, category, link });
+                renderTools(toolsData);
+                document.getElementById('newName').value = '';
+                document.getElementById('newLink').value = '';
+                document.getElementById('addFormContainer').classList.add('hidden');
+                alert('Tool added successfully (live view only)');
+            } else {
+                alert('Please fill all fields');
+            }
+        }
+
+        // Initial render
+        renderTools(toolsData);
+    </script>
+</body>
+</html>
